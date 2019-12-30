@@ -13,6 +13,25 @@
 #include <util/delay.h>
 #include "usart.h"
 
+#define DW_SPMEN (1 << 0)
+#define DW_PGERS (1 << 1)
+#define DW_PGWRT (1 << 2)
+#define DW_RFLB  (1 << 3)
+#define DW_CTPB  (1 << 4)
+
+// https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_SPM.html
+// opcode: 1001 0101 1110 1000
+#define DW_SPM           0b1001010111101000
+
+// https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_ADIW.html
+// opcode: 1001 0110 KKdd KKKK
+#define DW_ADIW_30_2     0b1001011000110010
+
+// https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_OUT.html
+// opcode: 1011 1AAr rrrr AAAA
+// SPMCSR: 0x37
+#define DW_OUT_SPMCSR_29 0b1011111111010111
+
 #define uchar uint8_t
 #include "usbdrv/usbdrv.h"
 
@@ -61,6 +80,7 @@ typedef enum {
     CMD_REGISTERS,
     CMD_SRAM,
     CMD_READ_FLASH,
+    CMD_WRITE_FLASH_PAGE,
 } usb_command_t;
 
 typedef enum {
@@ -77,6 +97,8 @@ static volatile error_type_t err = ERR_NOT_INITIALIZED;
 static bool after_break = false;
 static volatile uint16_t remaining = 0;
 static volatile bool data_on = false;
+static bool writing_flash_page = false;
+static uint16_t flash_page_start = 0;
 
 
 void
@@ -177,6 +199,20 @@ registers(uint8_t start, uint8_t len, bool write)
     send_byte(0xc2);
     send_byte(write ? 0x05 : 0x01);
     send_byte(0x20);
+}
+
+
+static void
+write_instruction(uint16_t inst)
+{
+    if (err != ERR_NONE)
+        return;
+
+    send_byte(0x64);
+    send_byte(0xd2);
+    send_byte(inst >> 8);
+    send_byte(inst);
+    send_byte(0x23);
 }
 
 
@@ -298,11 +334,7 @@ usbFunctionSetup(uchar data[8])
 
         case CMD_WRITE_INSTRUCTION: {
             err = ERR_NONE;
-            send_byte(0x64);
-            send_byte(0xd2);
-            send_byte(rq->wValue.word >> 8);
-            send_byte(rq->wValue.word);
-            send_byte(0x23);
+            write_instruction(rq->wValue.word);
             return 0;
         }
 
@@ -381,6 +413,31 @@ usbFunctionSetup(uchar data[8])
             remaining = rq->wLength.word;
             return USB_NO_MSG;
         }
+
+        case CMD_WRITE_FLASH_PAGE: {
+            err = ERR_NONE;
+            registers(29, 3, true);
+            send_byte(DW_CTPB | DW_SPMEN);
+            send_byte(rq->wValue.word);
+            send_byte(rq->wValue.word >> 8);
+            write_instruction(DW_OUT_SPMCSR_29);
+            write_instruction(DW_SPM);
+            send_break();
+
+            registers(29, 1, true);
+            send_byte(DW_PGERS | DW_SPMEN);
+            write_instruction(DW_OUT_SPMCSR_29);
+            write_instruction(DW_SPM);
+            send_break();
+
+            registers(29, 1, true);
+            send_byte(DW_SPMEN);
+
+            writing_flash_page = true;
+            flash_page_start = rq->wValue.word;
+            remaining = rq->wLength.word;
+            return USB_NO_MSG;
+        }
     }
 
     return 0;
@@ -403,10 +460,39 @@ uchar
 usbFunctionWrite(uchar *data, uchar len)
 {
     uint8_t i = 0;
-    while (i < len && remaining--) {
+    while (i < len && remaining) {
         wdt_reset();
-        send_byte(data[i++]);
+
+        if (writing_flash_page) {
+            uint8_t reg = remaining % 2;
+            registers(reg, 1, true);
+            send_byte(data[i++]);
+
+            if (reg == 1) {
+                write_instruction(DW_OUT_SPMCSR_29);
+                write_instruction(DW_SPM);
+                write_instruction(DW_ADIW_30_2);
+            }
+
+        }
+        else {
+            send_byte(data[i++]);
+        }
+        remaining--;
     }
+
+    if (writing_flash_page && !remaining) {
+        wdt_reset();
+        registers(29, 3, true);
+        send_byte(DW_PGWRT | DW_SPMEN);
+        send_byte(flash_page_start);
+        send_byte(flash_page_start >> 8);
+        write_instruction(DW_OUT_SPMCSR_29);
+        write_instruction(DW_SPM);
+        send_break();
+        writing_flash_page = false;
+    }
+
     return remaining ? 0 : 1;
 }
 
