@@ -155,19 +155,27 @@ section at the end of this file).
  * in a single control-in or control-out transfer. Note that the capability
  * for long transfers increases the driver size.
  */
-/* #define USB_RX_USER_HOOK(data, len)     if(usbRxToken == (uchar)USBPID_SETUP) blinkLED(); */
+#define USB_RX_USER_HOOK(data, len) \
+    if (usbRxToken == (uchar) USBPID_SETUP) { \
+        extern void data_led_on(void); \
+        data_led_on(); \
+    }
 /* This macro is a hook if you want to do unconventional things. If it is
  * defined, it's inserted at the beginning of received message processing.
  * If you eat the received message and don't want default processing to
  * proceed, do a return after doing your things. One possible application
  * (besides debugging) is to flash a status LED on each packet.
  */
-/* #define USB_RESET_HOOK(resetStarts)     if(!resetStarts){hadUsbReset();} */
+#define USB_RESET_HOOK(resetStarts) \
+    if (resetStarts) { \
+        PORTD &= ~(1 << 5); \
+    }
 /* This macro is a hook if you need to know when an USB RESET occurs. It has
  * one parameter which distinguishes between the start of RESET state and its
  * end.
  */
-/* #define USB_SET_ADDRESS_HOOK()              hadAddressAssigned(); */
+#define USB_SET_ADDRESS_HOOK() \
+    PORTD |= (1 << 5);
 /* This macro (if defined) is executed when a USB SET_ADDRESS request was
  * received.
  */

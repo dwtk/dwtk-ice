@@ -75,7 +75,26 @@ static uint8_t buf[4];
 static uint16_t ubrr = 0xffff;
 static volatile error_type_t err = ERR_NOT_INITIALIZED;
 static bool after_break = false;
-static volatile uint16_t remaining;
+static volatile uint16_t remaining = 0;
+static volatile bool data_on = false;
+
+
+void
+data_led_on(void)
+{
+    data_on = true;;
+    PORTD |= (1 << 6);
+}
+
+
+void
+data_led_off(void)
+{
+    if (data_on) {
+        data_on = false;
+        PORTD &= ~(1 << 6);
+    }
+}
 
 
 static void
@@ -397,6 +416,8 @@ main(void)
 {
     wdt_enable(WDTO_1S);
 
+    DDRD |= (1 << 5) | (1 << 6);
+
     usbInit();
     usbDeviceDisconnect();
 
@@ -412,6 +433,7 @@ main(void)
     for (;;) {
         wdt_reset();
         usbPoll();
+        data_led_off();
     }
 
     return 0;
