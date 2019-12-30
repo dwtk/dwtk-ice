@@ -91,14 +91,14 @@ typedef enum {
     ERR_BREAK_MISMATCH,
 } error_type_t;
 
+static bool after_break = false;
+static bool writing_flash_page = false;
 static uint8_t buf[4];
 static uint16_t ubrr = 0xffff;
-static volatile error_type_t err = ERR_NOT_INITIALIZED;
-static bool after_break = false;
-static volatile uint16_t remaining = 0;
-static volatile bool data_on = false;
-static bool writing_flash_page = false;
 static uint16_t flash_page_start = 0;
+static volatile bool data_on = false;
+static volatile uint16_t remaining = 0;
+static volatile error_type_t err = ERR_NOT_INITIALIZED;
 
 
 void
