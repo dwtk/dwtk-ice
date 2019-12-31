@@ -81,6 +81,7 @@ typedef enum {
     CMD_SRAM,
     CMD_READ_FLASH,
     CMD_WRITE_FLASH_PAGE,
+    CMD_ERASE_FLASH_PAGE,
 } usb_command_t;
 
 typedef enum {
@@ -213,6 +214,24 @@ write_instruction(uint16_t inst)
     send_byte(inst >> 8);
     send_byte(inst);
     send_byte(0x23);
+}
+
+
+static void
+erase_flash_page(uint16_t start, bool set_start)
+{
+    if (err != ERR_NONE)
+        return;
+
+    registers(29, set_start ? 3 : 1, true);
+    send_byte(DW_PGERS | DW_SPMEN);
+    if (set_start) {
+        send_byte(start);
+        send_byte(start >> 8);
+    }
+    write_instruction(DW_OUT_SPMCSR_29);
+    write_instruction(DW_SPM);
+    send_break();
 }
 
 
@@ -424,11 +443,7 @@ usbFunctionSetup(uchar data[8])
             write_instruction(DW_SPM);
             send_break();
 
-            registers(29, 1, true);
-            send_byte(DW_PGERS | DW_SPMEN);
-            write_instruction(DW_OUT_SPMCSR_29);
-            write_instruction(DW_SPM);
-            send_break();
+            erase_flash_page(0, false);
 
             registers(29, 1, true);
             send_byte(DW_SPMEN);
@@ -437,6 +452,12 @@ usbFunctionSetup(uchar data[8])
             flash_page_start = rq->wValue.word;
             remaining = rq->wLength.word;
             return USB_NO_MSG;
+        }
+
+        case CMD_ERASE_FLASH_PAGE: {
+            err = ERR_NONE;
+            erase_flash_page(rq->wValue.word, true);
+            return 0;
         }
     }
 
