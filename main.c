@@ -35,31 +35,6 @@
 #define uchar uint8_t
 #include "usbdrv/usbdrv.h"
 
-#if F_CPU == 20000000
-static const uint8_t ubrr_values[] = {
-    0x07,
-    0x08,
-    0x09,
-    0x0a,
-    0x0b,
-    0x0c,
-    0x0d,
-    0x0f,
-    0x10,
-    0x13,
-    0x15,
-    0x19,
-    0x1f,
-    0x27,
-    0x34,
-    0x4f,
-    0x9f,
-    0xff,
-};
-#else
-#error "CPU frequency not supported."
-#endif
-
 typedef enum {
     CMD_GET_ERROR = 0x40,
     CMD_GET_BAUDRATE_PRESCALER,
@@ -100,6 +75,7 @@ static uint16_t flash_page_start = 0;
 static volatile bool data_on = false;
 static volatile uint16_t remaining = 0;
 static volatile error_type_t err = ERR_NOT_INITIALIZED;
+static const uint8_t freq_mhz = F_CPU / 1000000;
 
 
 void
@@ -126,15 +102,21 @@ detect_baudrate(void)
     usart_clean();
     usart_init(0);
 
-    for (uint8_t i = 0; ubrr_values[i] != 0xff; i++) {
+    uint8_t last = 0xff;
+    for (uint8_t i = 20; i > 0; i--) {
+        uint8_t tmp_ubrr = ((freq_mhz * 8) - i) / i;
+        if (tmp_ubrr == last) {
+            continue;
+        }
         wdt_reset();
         usart_clean();
-        usart_init(ubrr_values[i]);
+        usart_init(tmp_ubrr);
         usart_send_break();
         if (0x55 == usart_recv_break_with_timeout(0xff)) {
-            ubrr = ubrr_values[i];
+            ubrr = tmp_ubrr;
             return;
         }
+        last = tmp_ubrr;
     }
 
     err = ERR_BAUDRATE_DETECTION;
@@ -252,7 +234,7 @@ usbFunctionSetup(uchar data[8])
         case CMD_GET_BAUDRATE_PRESCALER: {
             err = ERR_NONE;
             buf[0] = 16;
-            buf[1] = ((float) F_CPU)/1000000;
+            buf[1] = freq_mhz;
             usbMsgPtr = buf;
             return 2;
         }
