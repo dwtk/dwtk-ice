@@ -94,7 +94,7 @@ typedef enum {
 
 static bool after_break = false;
 static bool writing_flash_page = false;
-static uint8_t buf[4];
+static uint8_t buf[2];
 static uint16_t ubrr = 0xffff;
 static uint16_t flash_page_start = 0;
 static volatile bool data_on = false;
