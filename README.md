@@ -17,8 +17,8 @@ U1 | ATtiny4313 | ATTINY 4313 PU
 Q1 | BC548B | BC 548B
 Y1 | Crystal 20,000MHz | 20,0000-HC49U-S
 D1, D2 | Zener diode 3,6V | ZF 3,6
-LED1 | LED Red 5mm |
-LED2 | Led Green 5mm |
+LED1 | LED Red 5mm | LED 5MM RT
+LED2 | Led Green 5mm | LED 5MM GN
 C1 | Electrolytic capacitor 10uF/35V | RAD 10/35
 C2 | Multi-layer ceramic capacitor 100nF | X7R-5 100N
 C3, C4 | Ceramic capacitor 22pF | KERKO 22P
