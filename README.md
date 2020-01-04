@@ -37,3 +37,9 @@ H1 + H2 | Header pins 1x40 | SL 1X40G 2,54
 ![dwtk-ice prototype front](/images/prototype-front.jpg)
 
 ![dwtk-ice prototype back](/images/prototype-back.jpg)
+
+### DISCLAIMER
+
+THIS PROJECT IS PROVIDED AS IS. USE IT AT YOUR OWN RISK. THIS DEVICE IS USB CONNECTED AND MAY DAMAGE YOUR COMPUTER.
+
+The USB connections in the schematics are there just for reference, please check the actual pinout of your connector before assembling and/or using.
