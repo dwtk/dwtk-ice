@@ -130,7 +130,11 @@ detect_baudrate(void)
 
     uint8_t last = 0xff;
     for (uint8_t i = 20; i > 0; i--) {
-        uint8_t tmp_ubrr = ((freq_mhz * 8) - i) / i;
+        uint32_t tmp = ((freq_mhz * 160) - (10 * i)) / i;
+        uint16_t tmp_ubrr = tmp / 10;
+        if ((tmp % 10) >= 5) {
+            tmp_ubrr++;
+        }
         if (tmp_ubrr == last) {
             continue;
         }
@@ -282,7 +286,7 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_GET_BAUDRATE_PRESCALER: {
-            buf[0] = 16;
+            buf[0] = 8;
             buf[1] = freq_mhz;
             rv += 2;
             break;

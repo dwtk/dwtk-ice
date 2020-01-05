@@ -17,6 +17,7 @@ usart_init(uint16_t baudrate)
 {
     UBRRH = (uint8_t) (baudrate >> 8);
     UBRRL = (uint8_t) baudrate;
+    UCSRA = (1 << U2X);
     UCSRB = (1 << RXEN) | (1 << TXEN);
     UCSRC = (0b11 << UCSZ0);
 }
@@ -28,6 +29,7 @@ usart_clean(void)
     while (!(UCSRA & (1 << UDRE)));
     UBRRH = 0;
     UBRRL = 0;
+    UCSRA = 0;
     UCSRB = 0;
     UCSRC = 0;
 }
