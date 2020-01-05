@@ -129,7 +129,7 @@ detect_baudrate(void)
     usart_init(0);
 
     uint8_t last = 0xff;
-    for (uint8_t i = 20; i > 0; i--) {
+    for (uint8_t i = 1; i <= 20; i++) {
         uint32_t tmp = ((freq_mhz * 160) - (10 * i)) / i;
         uint16_t tmp_ubrr = tmp / 10;
         if ((tmp % 10) >= 5) {
