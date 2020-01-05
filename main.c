@@ -301,6 +301,7 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_SET_BAUDRATE: {
+            wdt_reset();
             ubrr = rq->wValue.word;
             usart_clean();
             usart_init(ubrr);
@@ -548,7 +549,7 @@ usbFunctionWrite(uchar *data, uchar len)
 int
 main(void)
 {
-    wdt_enable(WDTO_1S);
+    wdt_enable(WDTO_2S);
 
     DDRD |= (1 << 5) | (1 << 6);
 
