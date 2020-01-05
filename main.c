@@ -300,6 +300,7 @@ usbFunctionSetup(uchar data[8])
             ubrr = rq->wValue.word;
             usart_clean();
             usart_init(ubrr);
+            send_break();
             break;
         }
 
