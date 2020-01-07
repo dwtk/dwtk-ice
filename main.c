@@ -257,12 +257,19 @@ usbFunctionSetup(uchar data[8])
     cmd = rq->bRequest;
 
     switch (cmd) {
-        // these are the only commands that support writing
+        // these are the commands that support reading/writing
         case CMD_REGISTERS:
         case CMD_SRAM:
-        case CMD_WRITE_FLASH_PAGE:
             break;
 
+        // these are the commands that support only writing
+        case CMD_WRITE_FLASH_PAGE:
+            if (!write) {
+                return 0;
+            }
+            break;
+
+        // everything else supports only read
         default:
             if (write) {
                 return 0;
