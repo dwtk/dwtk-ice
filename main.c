@@ -19,6 +19,10 @@
 #define DW_RFLB  (1 << 3)
 #define DW_CTPB  (1 << 4)
 
+// https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_LPM.html
+// opcode: 1001 000d dddd 0101 - Z+
+#define DW_LPM_INC_28    0b1001000111000101
+
 // https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_SPM.html
 // opcode: 1001 0101 1110 1000
 #define DW_SPM           0b1001010111101000
@@ -57,6 +61,7 @@ typedef enum {
     CMD_READ_FLASH,
     CMD_WRITE_FLASH_PAGE,
     CMD_ERASE_FLASH_PAGE,
+    CMD_READ_FUSES,
 } usb_command_t;
 
 typedef enum {
@@ -489,6 +494,22 @@ usbFunctionSetup(uchar data[8])
 
         case CMD_ERASE_FLASH_PAGE: {
             erase_flash_page(rq->wValue.word, true);
+            break;
+        }
+
+        case CMD_READ_FUSES: {
+            registers(30, 2, true);
+            send_byte(0x00);
+            send_byte(0x00);
+            for (uint8_t i = 0; i < 4; i++) {
+                registers(29, 1, true);
+                send_byte(DW_RFLB | DW_SPMEN);
+                write_instruction(DW_OUT_SPMCSR_29);
+                write_instruction(DW_LPM_INC_28);
+                registers(28, 1, false);
+                buf[i] = usart_recv_byte();
+            }
+            rv += 4;
             break;
         }
     }
