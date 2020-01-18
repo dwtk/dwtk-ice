@@ -13,6 +13,11 @@
 #include <util/delay.h>
 #include "usart.h"
 
+#define uchar uint8_t
+#include "usbdrv/usbdrv.h"
+
+#define FREQ_MHZ (F_CPU/1000000)
+
 #define DW_SPMEN (1 << 0)
 #define DW_PGERS (1 << 1)
 #define DW_PGWRT (1 << 2)
@@ -36,17 +41,11 @@
 // SPMCSR: 0x37
 #define DW_OUT_SPMCSR_29 0b1011111111010111
 
-#define uchar uint8_t
-#include "usbdrv/usbdrv.h"
-
 typedef enum {
-    CMD_GET_ERROR = 0x40,
-    CMD_GET_BAUDRATE_PRESCALER,
-    CMD_DETECT_BAUDRATE,
-    CMD_SET_BAUDRATE,
+    CMD_GET_ERROR = 1,
+    CMD_INIT,
     CMD_DISABLE,
     CMD_RESET,
-    CMD_GET_SIGNATURE,
     CMD_SEND_BREAK,
     CMD_RECV_BREAK,
     CMD_GO,
@@ -67,19 +66,22 @@ typedef enum {
 typedef enum {
     ERR_NONE = 0,
     ERR_BAUDRATE_DETECTION,
+    ERR_TARGET_DETECTION,
+    ERR_TARGET_MISMATCH,
     ERR_ECHO_MISMATCH,
     ERR_BREAK_MISMATCH,
     ERR_TOO_LARGE,
 } error_type_t;
 
 static bool after_break = false;
-static uint16_t ubrr = 0xffff;
+static bool reset = false;
 static uint16_t flash_page_start = 0;
+static uint16_t pulse_width = 0;
 static uint16_t request_len = 0;
-static const uint8_t freq_mhz = F_CPU / 1000000;
-static volatile bool data_on = false;
-static volatile uint16_t remaining = 0;
-static volatile usb_command_t cmd;
+static uint16_t remaining = 0;
+static uint16_t signature = 0;
+static uint16_t ubrr = 0;
+static usb_command_t cmd = 0;
 
 // this is defined by the biggest flash page size we support, that is 128 bytes.
 // it is also limited by the SRAM size of the ATtiny4313. if we want to support
@@ -94,7 +96,7 @@ static uint8_t *buf = alloc + 1;
 
 
 static void
-read_usart_to_buffer(uint16_t len)
+recv_to_buffer(uint8_t len)
 {
     if (*err != ERR_NONE) {
         return;
@@ -109,79 +111,14 @@ read_usart_to_buffer(uint16_t len)
 }
 
 
-void  // not static because we "call" it from usbconfig.h
-data_led_on(void)
-{
-    data_on = true;;
-    PORTD |= (1 << 6);
-}
-
-
 static void
-data_led_off(void)
-{
-    if (data_on) {
-        data_on = false;
-        PORTD &= ~(1 << 6);
-    }
-}
-
-
-static void
-detect_baudrate(void)
-{
-    usart_clean();
-    usart_init(0);
-
-    uint8_t last = 0xff;
-    for (uint8_t i = 1; i <= 20; i++) {
-        uint32_t tmp = ((freq_mhz * 160) - (10 * i)) / i;
-        uint16_t tmp_ubrr = tmp / 10;
-        if ((tmp % 10) >= 5) {
-            tmp_ubrr++;
-        }
-        if (tmp_ubrr == last) {
-            continue;
-        }
-        wdt_reset();
-        usart_clean();
-        usart_init(tmp_ubrr);
-        usart_send_break();
-        if (0x55 == usart_recv_break_with_timeout(0xff)) {
-            ubrr = tmp_ubrr;
-            return;
-        }
-        last = tmp_ubrr;
-    }
-
-    *err = ERR_BAUDRATE_DETECTION;
-    ubrr = 0xffff;
-}
-
-
-static void
-send_byte(uint8_t b)
-{
-    if (*err != ERR_NONE) {
-        return;
-    }
-    usart_send_byte(b);
-    uint8_t c = usart_recv_byte();
-    if (b != c) {
-        *err = ERR_ECHO_MISMATCH;
-    }
-}
-
-
-static void
-recv_break()
+recv_break(void)
 {
     if (*err != ERR_NONE) {
         return;
     }
     wdt_reset();
-    uint8_t c = usart_recv_break();
-    if (c != 0x55) {
+    if (0x55 != usart_recv_break()) {
         *err = ERR_BREAK_MISMATCH;
     }
     else {
@@ -191,7 +128,7 @@ recv_break()
 
 
 static void
-send_break()
+send_break(void)
 {
     if (*err != ERR_NONE) {
         return;
@@ -202,11 +139,38 @@ send_break()
 
 
 static void
+send_break_with_timeout(void)
+{
+    if (*err != ERR_NONE) {
+        return;
+    }
+    usart_send_break();
+    wdt_reset();
+    if (0x55 != usart_recv_break_with_timeout()) {
+        *err = ERR_BREAK_MISMATCH;
+    }
+    else {
+        after_break = true;
+    }
+}
+
+
+static void
+send_byte(uint8_t b)
+{
+    if (*err != ERR_NONE) {
+        return;
+    }
+    usart_send_byte(b);
+    if (b != usart_recv_byte()) {
+        *err = ERR_ECHO_MISMATCH;
+    }
+}
+
+
+static void
 registers(uint8_t start, uint8_t len, bool write)
 {
-    if (*err != ERR_NONE)
-        return;
-
     send_byte(0x66);
     send_byte(0xd0);
     send_byte(0x00);
@@ -223,9 +187,6 @@ registers(uint8_t start, uint8_t len, bool write)
 static void
 write_instruction(uint16_t inst)
 {
-    if (*err != ERR_NONE)
-        return;
-
     send_byte(0x64);
     send_byte(0xd2);
     send_byte(inst >> 8);
@@ -237,9 +198,6 @@ write_instruction(uint16_t inst)
 static void
 erase_flash_page(uint16_t start, bool set_start)
 {
-    if (*err != ERR_NONE)
-        return;
-
     registers(29, set_start ? 3 : 1, true);
     send_byte(DW_PGERS | DW_SPMEN);
     if (set_start) {
@@ -252,12 +210,74 @@ erase_flash_page(uint16_t start, bool set_start)
 }
 
 
+static uint16_t
+detect_pulse_width(void)
+{
+    uint16_t rv;
+
+    TCCR1A = 0;
+    TCCR1B = (1 << ICNC1) | (1 << CS10);
+    TIFR = (1 << TOV1);
+
+    usart_send_break();
+    while (!(PIND & (1 << 1)));
+
+    TCNT1 = 0;
+    TIFR = (1 << TOV1) | (1 << ICF1);
+    TCCR1B |= (1 << ICES1);
+    while(!(TIFR & ((1 << ICF1) | (1 << TOV1))));
+    rv = ICR1;
+    if (TIFR & (1 << TOV1)) {
+        TCCR1B = 0;
+        *err = ERR_BAUDRATE_DETECTION;
+        return 0;
+    }
+
+    TIFR = (1 << ICF1);
+    TCCR1B &= ~(1 << ICES1);
+    while(!(TIFR & ((1 << ICF1) | (1 << TOV1))));
+    rv = ICR1 - rv;
+    if (TIFR & (1 << TOV1)) {
+        TCCR1B = 0;
+        *err = ERR_BAUDRATE_DETECTION;
+        return 0;
+    }
+
+    TCCR1B = 0;
+    return rv;
+}
+
+
+static uint16_t
+get_signature(void)
+{
+    if (*err != ERR_NONE) {
+        return 0;
+    }
+    send_byte(0xf3);
+    uint16_t rv = 0;
+    for (uint8_t i = 0; i < 2; i++) {
+        uint16_t tmp = usart_recv_byte_with_timeout();
+        if (tmp >> 8) {
+            *err = ERR_TARGET_DETECTION;
+            return 0;
+        }
+        rv |= (((uint8_t) tmp) << ((1 - i) * 8));
+    }
+    return rv;
+}
+
+
 usbMsgLen_t
 usbFunctionSetup(uchar data[8])
 {
     usbRequest_t *rq = (void*) data;
     bool write = (rq->bmRequestType & USBRQ_DIR_MASK) == USBRQ_DIR_HOST_TO_DEVICE;
     usbMsgLen_t rv = 1;  // err, always return err + buf unless USB_NO_MSG
+
+    if (*err != ERR_NONE) {
+        goto usbFunctionSetupEnd;
+    }
 
     cmd = rq->bRequest;
 
@@ -281,10 +301,6 @@ usbFunctionSetup(uchar data[8])
             }
     }
 
-    if (cmd != CMD_GET_ERROR) {
-        *err = ERR_NONE;
-    }
-
     request_len = rq->wLength.word;
     if (request_len > 0 && !write) {
         request_len--;
@@ -293,31 +309,28 @@ usbFunctionSetup(uchar data[8])
 
     switch (cmd) {
         case CMD_GET_ERROR: {
-            // nothing to do, buffer is already filled with error and rv already set
+            // nothing to do, error was already returned
             break;
         }
 
-        case CMD_GET_BAUDRATE_PRESCALER: {
-            buf[0] = 8;
-            buf[1] = freq_mhz;
-            rv += 2;
-            break;
-        }
-
-        case CMD_DETECT_BAUDRATE: {
-            detect_baudrate();
-            buf[0] = ubrr >> 8;
-            buf[1] = ubrr;
-            rv += 2;
-            break;
-        }
-
-        case CMD_SET_BAUDRATE: {
-            wdt_reset();
-            ubrr = rq->wValue.word;
-            usart_clean();
-            usart_init(ubrr);
-            send_break();
+        case CMD_INIT: {
+            send_break_with_timeout();
+            uint16_t tmp_signature = get_signature();
+            if (tmp_signature && tmp_signature != signature) {
+                *err = ERR_TARGET_MISMATCH;
+            }
+            if (*err != ERR_NONE) {
+                break;
+            }
+            buf[0] = FREQ_MHZ;
+            buf[1] = 8;
+            buf[2] = pulse_width >> 8;
+            buf[3] = pulse_width;
+            buf[4] = ubrr >> 8;
+            buf[5] = ubrr;
+            buf[6] = signature >> 8;
+            buf[7] = signature;
+            rv += 8;
             break;
         }
 
@@ -327,17 +340,8 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_RESET: {
-            send_break();
             send_byte(0x07);
             recv_break();
-            break;
-        }
-
-        case CMD_GET_SIGNATURE: {
-            send_byte(0xf3);
-            buf[0] = usart_recv_byte();
-            buf[1] = usart_recv_byte();
-            rv += 2;
             break;
         }
 
@@ -369,9 +373,9 @@ usbFunctionSetup(uchar data[8])
             //      byte 1 -> timers
             uint8_t t = 0x60;
             if (rq->wIndex.word & (1 << 0)) {
-                t = 0x61;
-                send_byte(0xd1);
                 uint8_t bp = rq->wValue.word / 2;
+                t++;
+                send_byte(0xd1);
                 send_byte(bp >> 8);
                 send_byte(bp);
             }
@@ -384,7 +388,7 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_WAIT: {
-            buf[0] = usart_wait() ? 0xff : 0;
+            buf[0] = (UCSRA & (1 << RXC)) ? 0xff : 0;
             rv++;
             break;
         }
@@ -395,8 +399,8 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_SET_PC: {
-            send_byte(0xd0);
             uint8_t b = rq->wValue.word / 2;
+            send_byte(0xd0);
             send_byte(b >> 8);
             send_byte(b);
             after_break = false;
@@ -423,19 +427,19 @@ usbFunctionSetup(uchar data[8])
             if (write) {
                 return USB_NO_MSG;
             }
-            read_usart_to_buffer(request_len);
+            recv_to_buffer(request_len);
             rv += request_len;
             break;
         }
 
         case CMD_SRAM: {
-            registers(30, 2, true);
-            send_byte(rq->wValue.word);
-            send_byte(rq->wValue.word >> 8);
             uint16_t l = request_len * 2;
             if (write) {
                 l++;
             }
+            registers(30, 2, true);
+            send_byte(rq->wValue.word);
+            send_byte(rq->wValue.word >> 8);
             send_byte(0x66);
             send_byte(0xd0);
             send_byte(0x00);
@@ -449,16 +453,16 @@ usbFunctionSetup(uchar data[8])
             if (write) {
                 return USB_NO_MSG;
             }
-            read_usart_to_buffer(request_len);
+            recv_to_buffer(request_len);
             rv += request_len;
             break;
         }
 
         case CMD_READ_FLASH: {
+            uint16_t l = request_len * 2;
             registers(30, 2, true);
             send_byte(rq->wValue.word);
             send_byte(rq->wValue.word >> 8);
-            uint16_t l = request_len * 2;
             send_byte(0x66);
             send_byte(0xd0);
             send_byte(0x00);
@@ -469,7 +473,7 @@ usbFunctionSetup(uchar data[8])
             send_byte(0xc2);
             send_byte(0x02);
             send_byte(0x20);
-            read_usart_to_buffer(request_len);
+            recv_to_buffer(request_len);
             rv += request_len;
             break;
         }
@@ -514,7 +518,13 @@ usbFunctionSetup(uchar data[8])
         }
     }
 
+usbFunctionSetupEnd:
+
     usbMsgPtr = alloc;
+
+    if (*err != ERR_NONE) {
+        reset = true;
+    }
 
     return rv;
 }
@@ -579,7 +589,17 @@ main(void)
 {
     wdt_enable(WDTO_2S);
 
-    DDRD |= (1 << 5) | (1 << 6);
+    DDRB |= (1 << 0);
+    DDRD |= (1 << 5);
+
+    wdt_reset();
+    pulse_width = detect_pulse_width();
+    ubrr = (pulse_width - 4) / 8;
+    usart_init(ubrr);
+    send_break();
+
+    wdt_reset();
+    signature = get_signature();
 
     usbInit();
     usbDeviceDisconnect();
@@ -596,7 +616,11 @@ main(void)
     for (;;) {
         wdt_reset();
         usbPoll();
-        data_led_off();
+        PORTB &= ~(1 << 0);
+        if (reset) {
+            wdt_enable(WDTO_15MS);
+            for (;;);
+        }
     }
 
     return 0;

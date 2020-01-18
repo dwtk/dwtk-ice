@@ -157,8 +157,7 @@ section at the end of this file).
  */
 #define USB_RX_USER_HOOK(data, len) \
     if (usbRxToken == (uchar) USBPID_SETUP) { \
-        extern void data_led_on(void); \
-        data_led_on(); \
+        PORTB |= (1 << 0); \
     }
 /* This macro is a hook if you want to do unconventional things. If it is
  * defined, it's inserted at the beginning of received message processing.

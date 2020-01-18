@@ -6,7 +6,6 @@
  * See https://opensource.org/licenses/BSD-3-Clause.
  */
 
-#include <stdbool.h>
 #include <avr/io.h>
 #include <util/delay.h>
 #include "usart.h"
@@ -53,22 +52,15 @@ usart_recv_byte(void)
 }
 
 
-uint8_t
-usart_recv_byte_with_timeout(uint8_t timeout)
+uint16_t
+usart_recv_byte_with_timeout(void)
 {
-    uint8_t t = timeout;
+    uint16_t t = 0xffff;
     while (t-- && !(UCSRA & (1 << RXC)));
     if (t == 0) {
-        return 0;
+        return 0xff00;
     }
     return UDR;
-}
-
-
-bool
-usart_wait(void)
-{
-    return UCSRA & (1 << RXC);
 }
 
 
@@ -76,7 +68,6 @@ void
 usart_send_break(void)
 {
     while (!(UCSRA & (1 << UDRE)));
-
     UCSRB &= ~(1 << TXEN);
     DDRD |= (1 << 1);
     PORTD &= ~(1 << 1);
@@ -90,30 +81,35 @@ usart_send_break(void)
 uint8_t
 usart_recv_break(void)
 {
-    while (!(UCSRA & (1 << RXC)));
-    uint8_t rv = UDR;
-    while (!rv) {
-        rv = usart_recv_byte();
+    uint8_t rv = 0;
+    for (;;) {
+        uint8_t status;
+        while (!((status = UCSRA) & (1 << RXC)));
+        rv = UDR;
+        if (!(status & (1 << FE))) {
+            break;
+        }
     }
     return rv;
 }
 
 
 uint8_t
-usart_recv_break_with_timeout(uint8_t timeout)
+usart_recv_break_with_timeout(void)
 {
     uint8_t rv = 0;
-    uint8_t t = timeout;
-    while (t-- && !(UCSRA & ((1 << RXC) | (1 << FE))));
-    if (!t) {
-        return 0;
+    uint8_t t = 0xff;
+    while (t--) {
+        uint8_t status;
+        uint16_t t1 = 0xffff;
+        while (t1-- && !((status = UCSRA) & (1 << RXC)));
+        if (!t1) {
+            return 0;
+        }
+        rv = UDR;
+        if (!(status & (1 << FE))) {
+            break;
+        }
     }
-
-    t = 0xff;
-    rv = UDR;
-    while (t-- && !rv) {
-        rv = usart_recv_byte_with_timeout(timeout);
-    }
-
-    return rv;
+    return t ? rv : 0;
 }

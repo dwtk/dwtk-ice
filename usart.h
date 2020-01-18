@@ -8,14 +8,11 @@
 
 #pragma once
 
-#include <stdbool.h>
-
 void usart_init(uint16_t baudrate);
 void usart_clean(void);
 void usart_send_byte(uint8_t b);
 uint8_t usart_recv_byte(void);
-uint8_t usart_recv_byte_with_timeout(uint8_t timeout);
-bool usart_wait();
+uint16_t usart_recv_byte_with_timeout(void);
 void usart_send_break(void);
 uint8_t usart_recv_break(void);
-uint8_t usart_recv_break_with_timeout(uint8_t timeout);
+uint8_t usart_recv_break_with_timeout(void);
