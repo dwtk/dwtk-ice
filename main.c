@@ -268,6 +268,25 @@ get_signature(void)
 }
 
 
+static void
+sram_flash(uint16_t addr, uint8_t d0, uint16_t d1, uint8_t c2)
+{
+    registers(30, 2, true);
+    send_byte(addr);
+    send_byte(addr >> 8);
+    send_byte(0x66);
+    send_byte(0xd0);
+    send_byte(0x00);
+    send_byte(d0);
+    send_byte(0xd1);
+    send_byte(d1 >> 8);
+    send_byte(d1);
+    send_byte(0xc2);
+    send_byte(c2);
+    send_byte(0x20);
+}
+
+
 usbMsgLen_t
 usbFunctionSetup(uchar data[8])
 {
@@ -437,19 +456,7 @@ usbFunctionSetup(uchar data[8])
             if (write) {
                 l++;
             }
-            registers(30, 2, true);
-            send_byte(rq->wValue.word);
-            send_byte(rq->wValue.word >> 8);
-            send_byte(0x66);
-            send_byte(0xd0);
-            send_byte(0x00);
-            send_byte(write ? 0x01 : 0x00);
-            send_byte(0xd1);
-            send_byte(l >> 8);
-            send_byte(l);
-            send_byte(0xc2);
-            send_byte(write ? 0x04 : 0x00);
-            send_byte(0x20);
+            sram_flash(rq->wValue.word, write ? 0x01 : 0x00, l, write ? 0x04 : 0x00);
             if (write) {
                 return USB_NO_MSG;
             }
@@ -460,19 +467,7 @@ usbFunctionSetup(uchar data[8])
 
         case CMD_READ_FLASH: {
             uint16_t l = request_len * 2;
-            registers(30, 2, true);
-            send_byte(rq->wValue.word);
-            send_byte(rq->wValue.word >> 8);
-            send_byte(0x66);
-            send_byte(0xd0);
-            send_byte(0x00);
-            send_byte(0x00);
-            send_byte(0xd1);
-            send_byte(l >> 8);
-            send_byte(l);
-            send_byte(0xc2);
-            send_byte(0x02);
-            send_byte(0x20);
+            sram_flash(rq->wValue.word, 0x00, l, 0x02);
             recv_to_buffer(request_len);
             rv += request_len;
             break;
