@@ -23,18 +23,6 @@ usart_init(uint16_t baudrate)
 
 
 void
-usart_clean(void)
-{
-    while (!(UCSRA & (1 << UDRE)));
-    UBRRH = 0;
-    UBRRL = 0;
-    UCSRA = 0;
-    UCSRB = 0;
-    UCSRC = 0;
-}
-
-
-void
 usart_send_byte(uint8_t b)
 {
     while (!(UCSRA & (1 << UDRE)));
@@ -48,18 +36,6 @@ uint8_t
 usart_recv_byte(void)
 {
     while (!(UCSRA & (1 << RXC)));
-    return UDR;
-}
-
-
-uint16_t
-usart_recv_byte_with_timeout(void)
-{
-    uint16_t t = 0xffff;
-    while (t-- && !(UCSRA & (1 << RXC)));
-    if (t == 0) {
-        return 0xff00;
-    }
     return UDR;
 }
 
@@ -91,25 +67,4 @@ usart_recv_break(void)
         }
     }
     return rv;
-}
-
-
-uint8_t
-usart_recv_break_with_timeout(void)
-{
-    uint8_t rv = 0;
-    uint8_t t = 0xff;
-    while (t--) {
-        uint8_t status;
-        uint16_t t1 = 0xffff;
-        while (t1-- && !((status = UCSRA) & (1 << RXC)));
-        if (!t1) {
-            return 0;
-        }
-        rv = UDR;
-        if (!(status & (1 << FE))) {
-            break;
-        }
-    }
-    return t ? rv : 0;
 }

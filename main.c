@@ -15,6 +15,7 @@
 
 #define uchar uint8_t
 #include "usbdrv/usbdrv.h"
+extern volatile schar usbRxLen;
 
 #define FREQ_MHZ (F_CPU/1000000)
 
@@ -43,9 +44,11 @@
 
 typedef enum {
     CMD_GET_ERROR = 1,
-    CMD_INIT,
+    CMD_DETECT_BAUDRATE,
+    CMD_GET_BAUDRATE,
     CMD_DISABLE,
     CMD_RESET,
+    CMD_GET_SIGNATURE,
     CMD_SEND_BREAK,
     CMD_RECV_BREAK,
     CMD_GO,
@@ -66,20 +69,17 @@ typedef enum {
 typedef enum {
     ERR_NONE = 0,
     ERR_BAUDRATE_DETECTION,
-    ERR_TARGET_DETECTION,
-    ERR_TARGET_MISMATCH,
     ERR_ECHO_MISMATCH,
     ERR_BREAK_MISMATCH,
     ERR_TOO_LARGE,
 } error_type_t;
 
 static bool after_break = false;
-static bool reset = false;
+static bool detect_baudrate = false;
 static uint16_t flash_page_start = 0;
 static uint16_t pulse_width = 0;
 static uint16_t request_len = 0;
 static uint16_t remaining = 0;
-static uint16_t signature = 0;
 static uint16_t ubrr = 0;
 static usb_command_t cmd = 0;
 
@@ -135,23 +135,6 @@ send_break(void)
     }
     usart_send_break();
     recv_break();
-}
-
-
-static void
-send_break_with_timeout(void)
-{
-    if (*err != ERR_NONE) {
-        return;
-    }
-    usart_send_break();
-    wdt_reset();
-    if (0x55 != usart_recv_break_with_timeout()) {
-        *err = ERR_BREAK_MISMATCH;
-    }
-    else {
-        after_break = true;
-    }
 }
 
 
@@ -213,7 +196,7 @@ erase_flash_page(uint16_t start, bool set_start)
 static uint16_t
 detect_pulse_width(void)
 {
-    uint16_t rv;
+    uint16_t rv = 0;
 
     TCCR1A = 0;
     TCCR1B = (1 << ICNC1) | (1 << CS10);
@@ -225,9 +208,11 @@ detect_pulse_width(void)
     TCNT1 = 0;
     TIFR = (1 << TOV1) | (1 << ICF1);
     TCCR1B |= (1 << ICES1);
-    while(!(TIFR & ((1 << ICF1) | (1 << TOV1))));
+    cli();
+    while (!(TIFR & ((1 << ICF1) | (1 << TOV1))));
     rv = ICR1;
     if (TIFR & (1 << TOV1)) {
+        sei();
         TCCR1B = 0;
         *err = ERR_BAUDRATE_DETECTION;
         return 0;
@@ -235,7 +220,8 @@ detect_pulse_width(void)
 
     TIFR = (1 << ICF1);
     TCCR1B &= ~(1 << ICES1);
-    while(!(TIFR & ((1 << ICF1) | (1 << TOV1))));
+    while (!(TIFR & ((1 << ICF1) | (1 << TOV1))));
+    sei();
     rv = ICR1 - rv;
     if (TIFR & (1 << TOV1)) {
         TCCR1B = 0;
@@ -244,26 +230,6 @@ detect_pulse_width(void)
     }
 
     TCCR1B = 0;
-    return rv;
-}
-
-
-static uint16_t
-get_signature(void)
-{
-    if (*err != ERR_NONE) {
-        return 0;
-    }
-    send_byte(0xf3);
-    uint16_t rv = 0;
-    for (uint8_t i = 0; i < 2; i++) {
-        uint16_t tmp = usart_recv_byte_with_timeout();
-        if (tmp >> 8) {
-            *err = ERR_TARGET_DETECTION;
-            return 0;
-        }
-        rv |= (((uint8_t) tmp) << ((1 - i) * 8));
-    }
     return rv;
 }
 
@@ -294,10 +260,6 @@ usbFunctionSetup(uchar data[8])
     bool write = (rq->bmRequestType & USBRQ_DIR_MASK) == USBRQ_DIR_HOST_TO_DEVICE;
     usbMsgLen_t rv = 1;  // err, always return err + buf unless USB_NO_MSG
 
-    if (*err != ERR_NONE) {
-        goto usbFunctionSetupEnd;
-    }
-
     cmd = rq->bRequest;
 
     switch (cmd) {
@@ -320,6 +282,10 @@ usbFunctionSetup(uchar data[8])
             }
     }
 
+    if (cmd != CMD_GET_ERROR) {
+        *err = ERR_NONE;
+    }
+
     request_len = rq->wLength.word;
     if (request_len > 0 && !write) {
         request_len--;
@@ -328,28 +294,23 @@ usbFunctionSetup(uchar data[8])
 
     switch (cmd) {
         case CMD_GET_ERROR: {
-            // nothing to do, error was already returned
+            // nothing to do, error is already set.
             break;
         }
 
-        case CMD_INIT: {
-            send_break_with_timeout();
-            uint16_t tmp_signature = get_signature();
-            if (tmp_signature && tmp_signature != signature) {
-                *err = ERR_TARGET_MISMATCH;
-            }
-            if (*err != ERR_NONE) {
-                break;
-            }
+        case CMD_DETECT_BAUDRATE: {
+            detect_baudrate = true;
+            break;
+        }
+
+        case CMD_GET_BAUDRATE: {
             buf[0] = FREQ_MHZ;
             buf[1] = 8;
             buf[2] = pulse_width >> 8;
             buf[3] = pulse_width;
             buf[4] = ubrr >> 8;
             buf[5] = ubrr;
-            buf[6] = signature >> 8;
-            buf[7] = signature;
-            rv += 8;
+            rv += 6;
             break;
         }
 
@@ -361,6 +322,14 @@ usbFunctionSetup(uchar data[8])
         case CMD_RESET: {
             send_byte(0x07);
             recv_break();
+            break;
+        }
+
+        case CMD_GET_SIGNATURE: {
+            send_byte(0xf3);
+            buf[0] = usart_recv_byte();
+            buf[1] = usart_recv_byte();
+            rv += 2;
             break;
         }
 
@@ -513,13 +482,7 @@ usbFunctionSetup(uchar data[8])
         }
     }
 
-usbFunctionSetupEnd:
-
     usbMsgPtr = alloc;
-
-    if (*err != ERR_NONE) {
-        reset = true;
-    }
 
     return rv;
 }
@@ -587,15 +550,6 @@ main(void)
     DDRB |= (1 << 0);
     DDRD |= (1 << 5);
 
-    wdt_reset();
-    pulse_width = detect_pulse_width();
-    ubrr = (pulse_width - 4) / 8;
-    usart_init(ubrr);
-    send_break();
-
-    wdt_reset();
-    signature = get_signature();
-
     usbInit();
     usbDeviceDisconnect();
 
@@ -612,9 +566,16 @@ main(void)
         wdt_reset();
         usbPoll();
         PORTB &= ~(1 << 0);
-        if (reset) {
-            wdt_enable(WDTO_15MS);
-            for (;;);
+        if (detect_baudrate) {
+            detect_baudrate = false;
+            wdt_reset();
+            while (usbRxLen);
+            pulse_width = detect_pulse_width();
+            if (*err == ERR_NONE) {
+                ubrr = (pulse_width - 4) / 8;
+                usart_init(ubrr);
+                send_break();
+            }
         }
     }
 
