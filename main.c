@@ -25,22 +25,32 @@ extern volatile schar usbRxLen;
 #define DW_RFLB  (1 << 3)
 #define DW_CTPB  (1 << 4)
 
+#define DW_SPMCSR 0x37
+
 // https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_LPM.html
+// opcode: 1001 000d dddd 0100 - Z
 // opcode: 1001 000d dddd 0101 - Z+
-#define DW_LPM_INC_28    0b1001000111000101
+#define DW_LPM(reg, inc)  0b1001000000000100 | \
+                          ((0b11111 & reg) << 4) | \
+                          (0b1 & inc)
 
 // https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_SPM.html
 // opcode: 1001 0101 1110 1000
-#define DW_SPM           0b1001010111101000
+#define DW_SPM()          0b1001010111101000
 
 // https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_ADIW.html
 // opcode: 1001 0110 KKdd KKKK
-#define DW_ADIW_30_2     0b1001011000110010
+#define DW_ADIW(reg, val) 0b1001011000000000 | \
+                          ((0b110000 & val) << 2) | \
+                          ((0b110 & (reg - 24)) << 3) | \
+                          (0b1111 & val)
 
 // https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_OUT.html
 // opcode: 1011 1AAr rrrr AAAA
-// SPMCSR: 0x37
-#define DW_OUT_SPMCSR_29 0b1011111111010111
+#define DW_OUT(addr, reg) 0b1011100000000000 | \
+                          ((0b110000 & addr) << 5) | \
+                          ((0b11111 & reg) << 4) | \
+                          (0b1111 & addr)
 
 typedef enum {
     CMD_GET_ERROR = 1,
@@ -187,8 +197,8 @@ erase_flash_page(uint16_t start, bool set_start)
         send_byte(start);
         send_byte(start >> 8);
     }
-    write_instruction(DW_OUT_SPMCSR_29);
-    write_instruction(DW_SPM);
+    write_instruction(DW_OUT(DW_SPMCSR, 29));
+    write_instruction(DW_SPM());
     send_break();
 }
 
@@ -447,8 +457,8 @@ usbFunctionSetup(uchar data[8])
             send_byte(DW_CTPB | DW_SPMEN);
             send_byte(rq->wValue.word);
             send_byte(rq->wValue.word >> 8);
-            write_instruction(DW_OUT_SPMCSR_29);
-            write_instruction(DW_SPM);
+            write_instruction(DW_OUT(DW_SPMCSR, 29));
+            write_instruction(DW_SPM());
             send_break();
 
             erase_flash_page(0, false);
@@ -472,8 +482,8 @@ usbFunctionSetup(uchar data[8])
             for (uint8_t i = 0; i < 4; i++) {
                 registers(29, 1, true);
                 send_byte(DW_RFLB | DW_SPMEN);
-                write_instruction(DW_OUT_SPMCSR_29);
-                write_instruction(DW_LPM_INC_28);
+                write_instruction(DW_OUT(DW_SPMCSR, 29));
+                write_instruction(DW_LPM(28, true));
                 registers(28, 1, false);
                 buf[i] = usart_recv_byte();
             }
@@ -518,9 +528,9 @@ usbFunctionWrite(uchar *data, uchar len)
                 registers(0, 2, true);
                 send_byte(buf[i++]);
                 send_byte(buf[i++]);
-                write_instruction(DW_OUT_SPMCSR_29);
-                write_instruction(DW_SPM);
-                write_instruction(DW_ADIW_30_2);
+                write_instruction(DW_OUT(DW_SPMCSR, 29));
+                write_instruction(DW_SPM());
+                write_instruction(DW_ADIW(30, 2));
             }
 
             wdt_reset();
@@ -528,8 +538,8 @@ usbFunctionWrite(uchar *data, uchar len)
             send_byte(DW_PGWRT | DW_SPMEN);
             send_byte(flash_page_start);
             send_byte(flash_page_start >> 8);
-            write_instruction(DW_OUT_SPMCSR_29);
-            write_instruction(DW_SPM);
+            write_instruction(DW_OUT(DW_SPMCSR, 29));
+            write_instruction(DW_SPM());
             send_break();
             break;
         }
