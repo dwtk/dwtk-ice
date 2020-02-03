@@ -580,6 +580,7 @@ main(void)
             detect_baudrate = false;
             wdt_reset();
             while (usbRxLen);
+            usart_clear();
             pulse_width = detect_pulse_width();
             if (*err == ERR_NONE) {
                 ubrr = (pulse_width - 4) / 8;

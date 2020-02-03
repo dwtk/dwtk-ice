@@ -27,6 +27,17 @@ usart_init(uint16_t baudrate)
 
 
 void
+usart_clear(void)
+{
+    UBRRH = 0;
+    UBRRL = 0;
+    UCSRA = 0;
+    UCSRB = 0;
+    UCSRC = 0;
+}
+
+
+void
 usart_send_byte(uint8_t b)
 {
     while (!(UCSRA & (1 << UDRE)));

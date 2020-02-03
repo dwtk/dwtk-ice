@@ -9,6 +9,7 @@
 #pragma once
 
 void usart_init(uint16_t baudrate);
+void usart_clear(void);
 void usart_send_byte(uint8_t b);
 uint8_t usart_recv_byte(void);
 void usart_send_break(void);
