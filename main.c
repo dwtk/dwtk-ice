@@ -98,21 +98,22 @@ static usb_command_t cmd = 0;
 // any device with bigger flash page size, we will need to implement partial
 // read/write from the host. This is kinda tricky, specially for reads, because
 // the devices won't wait too long for data reads.
-static uint8_t alloc[129] = {
+static uint8_t alloc[131] = {
     ERR_NONE,
 };
+// first 3 bytes are for error reporting.
 static uint8_t *err = alloc;
-static uint8_t *buf = alloc + 1;
+static uint8_t *buf = alloc + 3;
 
 
 static void
 recv_to_buffer(uint8_t len)
 {
-    if (*err != ERR_NONE) {
+    if (err[0] != ERR_NONE) {
         return;
     }
     if (len > 128) {
-        *err = ERR_TOO_LARGE;
+        err[0] = ERR_TOO_LARGE;
         return;
     }
     for (uint8_t i = 0; i < len; i++) {
@@ -124,12 +125,14 @@ recv_to_buffer(uint8_t len)
 static void
 recv_break(void)
 {
-    if (*err != ERR_NONE) {
+    if (err[0] != ERR_NONE) {
         return;
     }
     wdt_reset();
-    if (0x55 != usart_recv_break()) {
-        *err = ERR_BREAK_MISMATCH;
+    uint8_t c = usart_recv_break();
+    if (0x55 != c) {
+        err[0] = ERR_BREAK_MISMATCH;
+        err[1] = c;
     }
     else {
         after_break = true;
@@ -140,7 +143,7 @@ recv_break(void)
 static void
 send_break(void)
 {
-    if (*err != ERR_NONE) {
+    if (err[0] != ERR_NONE) {
         return;
     }
     usart_send_break();
@@ -151,12 +154,15 @@ send_break(void)
 static void
 send_byte(uint8_t b)
 {
-    if (*err != ERR_NONE) {
+    if (err[0] != ERR_NONE) {
         return;
     }
     usart_send_byte(b);
-    if (b != usart_recv_byte()) {
-        *err = ERR_ECHO_MISMATCH;
+    uint8_t c = usart_recv_byte();
+    if (b != c) {
+        err[0] = ERR_ECHO_MISMATCH;
+        err[1] = b;
+        err[2] = c;
     }
 }
 
@@ -224,7 +230,7 @@ detect_pulse_width(void)
     if (TIFR & (1 << TOV1)) {
         sei();
         TCCR1B = 0;
-        *err = ERR_BAUDRATE_DETECTION;
+        err[0] = ERR_BAUDRATE_DETECTION;
         return 0;
     }
 
@@ -235,7 +241,7 @@ detect_pulse_width(void)
     rv = ICR1 - rv;
     if (TIFR & (1 << TOV1)) {
         TCCR1B = 0;
-        *err = ERR_BAUDRATE_DETECTION;
+        err[0] = ERR_BAUDRATE_DETECTION;
         return 0;
     }
 
@@ -268,7 +274,7 @@ usbFunctionSetup(uchar data[8])
 {
     usbRequest_t *rq = (void*) data;
     bool write = (rq->bmRequestType & USBRQ_DIR_MASK) == USBRQ_DIR_HOST_TO_DEVICE;
-    usbMsgLen_t rv = 1;  // err, always return err + buf unless USB_NO_MSG
+    usbMsgLen_t rv = 3;  // err, always return err + buf unless USB_NO_MSG
 
     cmd = rq->bRequest;
 
@@ -293,7 +299,9 @@ usbFunctionSetup(uchar data[8])
     }
 
     if (cmd != CMD_GET_ERROR) {
-        *err = ERR_NONE;
+        err[0] = ERR_NONE;
+        err[1] = 0;
+        err[2] = 0;
     }
 
     request_len = rq->wLength.word;
@@ -582,7 +590,7 @@ main(void)
             while (usbRxLen);
             usart_clear();
             pulse_width = detect_pulse_width();
-            if (*err == ERR_NONE) {
+            if (err[0] == ERR_NONE) {
                 ubrr = (pulse_width - 4) / 8;
                 usart_init(ubrr);
                 send_break();
