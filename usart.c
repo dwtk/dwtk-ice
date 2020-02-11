@@ -10,10 +10,6 @@
 #include <util/delay.h>
 #include "usart.h"
 
-#ifndef USART_BREAK_TIME_MS
-#define USART_BREAK_TIME_MS 5
-#endif
-
 
 void
 usart_init(uint16_t baudrate)
@@ -62,7 +58,7 @@ usart_send_break(void)
     UCSRB &= ~(1 << TXEN);
     DDRD |= (1 << 1);
     PORTD &= ~(1 << 1);
-    _delay_ms(USART_BREAK_TIME_MS);
+    _delay_us(USART_BREAK_TIME_US);
     PORTD |= (1 << 1);
     DDRD &= ~(1 << 1);
     UCSRB |= (1 << TXEN);

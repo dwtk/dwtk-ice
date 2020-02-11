@@ -3,6 +3,7 @@ AVRDUDE_PROGRAMMER ?= usbtiny
 AVRDUDE_PORT ?= usb
 AVR_MCU ?= attiny4313
 AVR_CPU_FREQUENCY ?= 20000000UL
+USART_BREAK_TIME_US ?= 2500
 
 AVRDUDE = avrdude
 CC = avr-gcc
@@ -24,6 +25,7 @@ CFLAGS = \
 	-std=gnu99 \
 	-mmcu=$(AVR_MCU) \
 	-DF_CPU=$(AVR_CPU_FREQUENCY) \
+	-DUSART_BREAK_TIME_US=$(USART_BREAK_TIME_US) \
 	-Os \
 	-ggdb \
 	-funsigned-char \
