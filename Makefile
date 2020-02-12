@@ -19,7 +19,6 @@ AVR_FUSE_HIGH_SPIEN = 0xDF
 AVR_FUSE_HIGH_DWEN = 0x5F
 
 AVR_FUSE_EXTENDED = 0xFF
-AVR_LOCKBIT = 0xFF
 
 CFLAGS = \
 	-std=gnu99 \
@@ -84,7 +83,6 @@ flash: firmware.hex
 		-U lfuse:w:$(AVR_FUSE_LOW):m \
 		-U hfuse:w:$(AVR_FUSE_HIGH_SPIEN):m \
 		-U efuse:w:$(AVR_FUSE_EXTENDED):m \
-		-U lock:w:$(AVR_LOCKBIT):m
 
 dw:
 	$(AVRDUDE) \
@@ -94,7 +92,6 @@ dw:
 		-U lfuse:w:$(AVR_FUSE_LOW):m \
 		-U hfuse:w:$(AVR_FUSE_HIGH_DWEN):m \
 		-U efuse:w:$(AVR_FUSE_EXTENDED):m \
-		-U lock:w:$(AVR_LOCKBIT):m
 
 clean:
 	-$(RM) \
