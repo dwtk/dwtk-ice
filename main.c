@@ -12,9 +12,8 @@
 #include <avr/wdt.h>
 #include <util/delay.h>
 #include "usart.h"
-
-#define uchar uint8_t
 #include "usbdrv/usbdrv.h"
+
 extern volatile schar usbRxLen;
 
 #define FREQ_MHZ (F_CPU/1000000)
