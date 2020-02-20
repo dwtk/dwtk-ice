@@ -11,6 +11,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <util/delay.h>
+#include "bits.h"
 #include "usart.h"
 #include "usbdrv/usbdrv.h"
 
@@ -53,7 +54,11 @@ extern volatile schar usbRxLen;
 
 typedef enum {
     CMD_GET_ERROR = 1,
-    CMD_DETECT_BAUDRATE,
+
+    CMD_SPI_PGM_ENABLE = 0x20,
+    CMD_SPI_COMMAND,
+
+    CMD_DETECT_BAUDRATE = 0x40,
     CMD_GET_BAUDRATE,
     CMD_DISABLE,
     CMD_RESET,
@@ -77,7 +82,11 @@ typedef enum {
 
 typedef enum {
     ERR_NONE = 0,
-    ERR_BAUDRATE_DETECTION,
+
+    ERR_SPI_PGM_ENABLE = 0x20,
+    ERR_SPI_ECHO_MISMATCH,
+
+    ERR_BAUDRATE_DETECTION = 0x40,
     ERR_ECHO_MISMATCH,
     ERR_BREAK_MISMATCH,
     ERR_TOO_LARGE,
@@ -85,11 +94,12 @@ typedef enum {
 
 static bool after_break = false;
 static bool detect_baudrate = false;
+static bool mode_spi = false;
 static uint16_t flash_page_start = 0;
 static uint16_t pulse_width = 0;
 static uint16_t request_len = 0;
 static uint16_t remaining = 0;
-static uint16_t ubrr = 0;
+static uint16_t ubrr = 0xffff;
 static usb_command_t cmd = 0;
 
 // this is defined by the biggest flash page size we support, that is 128 bytes.
@@ -218,7 +228,7 @@ detect_pulse_width(void)
     TIFR = (1 << TOV1);
 
     usart_send_break();
-    while (!(PIND & (1 << 1)));
+    while (!PIN_TEST(P_TXD));
 
     TCNT1 = 0;
     TIFR = (1 << TOV1) | (1 << ICF1);
@@ -268,6 +278,22 @@ sram_flash(uint16_t addr, uint8_t d0, uint16_t d1, uint8_t c2)
 }
 
 
+static uint8_t
+spi(uint8_t c)
+{
+    if (err[0] != ERR_NONE) {
+        return 0;
+    }
+    USIDR = c;
+    USISR = (1 << USIOIF);
+    while (!(USISR & (1 << USIOIF))) {
+        USICR = (1 << USIWM0) | (1 << USICS1) | (1 << USICLK) | (1 << USITC);
+        _delay_us(10);
+    }
+    return USIDR;
+}
+
+
 usbMsgLen_t
 usbFunctionSetup(uchar data[8])
 {
@@ -309,9 +335,81 @@ usbFunctionSetup(uchar data[8])
     }
     remaining = request_len;
 
+    if (cmd >= 0x20) {
+        if (cmd < 0x40) {  // SPI
+            if (!mode_spi) {
+                usart_clear();
+                DDR_SET(P_DO);
+                DDR_SET(P_USCK);
+                DDR_SET(P_TXD);
+                PORT_CLEAR(P_DO);
+                PORT_CLEAR(P_USCK);
+                PORT_CLEAR(P_TXD);
+                mode_spi = true;
+            }
+        }
+        else {  // debugWIRE
+            if (mode_spi) {
+                DDR_CLEAR(P_DO);
+                DDR_CLEAR(P_USCK);
+                DDR_CLEAR(P_TXD);
+                if (ubrr != 0xffff) {
+                    usart_init(ubrr);
+                }
+                mode_spi = false;
+            }
+        }
+    }
+
+
     switch (cmd) {
         case CMD_GET_ERROR: {
             // nothing to do, error is already set.
+            break;
+        }
+
+        case CMD_SPI_PGM_ENABLE: {
+            // reset
+            PORT_CLEAR(P_TXD);
+            _delay_us(10);
+            PORT_SET(P_TXD);
+            _delay_us(10);
+            PORT_CLEAR(P_TXD);
+            _delay_ms(30);
+
+            // first try
+            buf[0] = spi(0xac);
+            buf[1] = spi(0x53);
+            buf[2] = spi(0);
+            buf[3] = spi(0);
+            rv += 4;
+            if (0x53 == buf[2]) {
+                break;
+            }
+
+            // second try
+            buf[0] = spi(0xac);
+            buf[1] = spi(0x53);
+            buf[2] = spi(0);
+            buf[3] = spi(0);
+            if (0x53 != buf[2]) {
+                err[0] = ERR_SPI_PGM_ENABLE;
+            }
+
+            break;
+        }
+
+        case CMD_SPI_COMMAND: {
+            buf[0] = spi(rq->wValue.word >> 8);
+            buf[1] = spi(rq->wValue.word);
+            buf[2] = spi(rq->wIndex.word >> 8);
+            buf[3] = spi(rq->wIndex.word);
+            if (((uint8_t) rq->wValue.word) != buf[2]) {
+                err[0] = ERR_SPI_ECHO_MISMATCH;
+                err[1] = rq->wValue.word;
+                err[2] = buf[2];
+            }
+            rv += 4;
             break;
         }
 
@@ -564,8 +662,8 @@ main(void)
 {
     wdt_enable(WDTO_2S);
 
-    DDRB |= (1 << 0);
-    DDRD |= (1 << 5);
+    DDR_SET(P_LEDG);
+    DDR_SET(P_LEDR);
 
     usbInit();
     usbDeviceDisconnect();
@@ -582,7 +680,7 @@ main(void)
     for (;;) {
         wdt_reset();
         usbPoll();
-        PORTB &= ~(1 << 0);
+        PORT_CLEAR(P_LEDG);
         if (detect_baudrate) {
             detect_baudrate = false;
             wdt_reset();

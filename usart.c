@@ -8,6 +8,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
+#include <bits.h>
 #include "usart.h"
 
 
@@ -56,11 +57,11 @@ usart_send_break(void)
 {
     while (!(UCSRA & (1 << UDRE)));
     UCSRB &= ~(1 << TXEN);
-    DDRD |= (1 << 1);
-    PORTD &= ~(1 << 1);
+    DDR_SET(P_TXD);
+    PORT_CLEAR(P_TXD);
     _delay_us(USART_BREAK_TIME_US);
-    PORTD |= (1 << 1);
-    DDRD &= ~(1 << 1);
+    PORT_SET(P_TXD);
+    DDR_CLEAR(P_TXD);
     UCSRB |= (1 << TXEN);
 }
 

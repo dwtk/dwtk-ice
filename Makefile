@@ -47,6 +47,7 @@ SOURCES = \
 	$(NULL)
 
 HEADERS = \
+	bits.h \
 	usart.h \
 	usbconfig.h \
 	usbdrv/usbdrv.h \
