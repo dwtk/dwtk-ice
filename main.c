@@ -56,6 +56,7 @@ typedef enum {
     CMD_GET_ERROR = 1,
 
     CMD_SPI_PGM_ENABLE = 0x20,
+    CMD_SPI_PGM_DISABLE,
     CMD_SPI_COMMAND,
 
     CMD_DETECT_BAUDRATE = 0x40,
@@ -396,6 +397,11 @@ usbFunctionSetup(uchar data[8])
                 err[0] = ERR_SPI_PGM_ENABLE;
             }
 
+            break;
+        }
+
+        case CMD_SPI_PGM_DISABLE: {
+            PORT_SET(P_TXD);
             break;
         }
 
