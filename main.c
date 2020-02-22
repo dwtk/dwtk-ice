@@ -441,6 +441,7 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_RESET: {
+            send_break();
             send_byte(0x07);
             recv_break();
             break;
