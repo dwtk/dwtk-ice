@@ -63,7 +63,7 @@ typedef enum {
     CMD_GET_BAUDRATE,
     CMD_DISABLE,
     CMD_RESET,
-    CMD_GET_SIGNATURE,
+    CMD_READ_SIGNATURE,
     CMD_SEND_BREAK,
     CMD_RECV_BREAK,
     CMD_GO,
@@ -447,7 +447,7 @@ usbFunctionSetup(uchar data[8])
             break;
         }
 
-        case CMD_GET_SIGNATURE: {
+        case CMD_READ_SIGNATURE: {
             send_byte(0xf3);
             buf[0] = usart_recv_byte();
             buf[1] = usart_recv_byte();
