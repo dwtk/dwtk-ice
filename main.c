@@ -58,6 +58,7 @@ typedef enum {
     CMD_SPI_PGM_ENABLE = 0x20,
     CMD_SPI_PGM_DISABLE,
     CMD_SPI_COMMAND,
+    CMD_SPI_RESET,
 
     CMD_DETECT_BAUDRATE = 0x40,
     CMD_GET_BAUDRATE,
@@ -295,6 +296,17 @@ spi(uint8_t c)
 }
 
 
+static void
+spi_reset(void)
+{
+    PORT_SET(P_TXD);
+    _delay_us(10);
+    PORT_CLEAR(P_TXD);
+    _delay_us(100);
+    PORT_SET(P_TXD);
+}
+
+
 usbMsgLen_t
 usbFunctionSetup(uchar data[8])
 {
@@ -371,10 +383,7 @@ usbFunctionSetup(uchar data[8])
 
         case CMD_SPI_PGM_ENABLE: {
             // reset
-            PORT_CLEAR(P_TXD);
-            _delay_us(10);
-            PORT_SET(P_TXD);
-            _delay_us(10);
+            spi_reset();
             PORT_CLEAR(P_TXD);
             _delay_ms(30);
 
@@ -416,6 +425,11 @@ usbFunctionSetup(uchar data[8])
                 err[2] = buf[2];
             }
             rv += 4;
+            break;
+        }
+
+        case CMD_SPI_RESET: {
+            spi_reset();
             break;
         }
 
