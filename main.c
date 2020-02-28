@@ -497,7 +497,7 @@ usbFunctionSetup(uchar data[8])
             //      byte 1 -> timers
             uint8_t t = 0x60;
             if (rq->wIndex.word & (1 << 0)) {
-                uint8_t bp = rq->wValue.word / 2;
+                uint16_t bp = rq->wValue.word / 2;
                 t++;
                 send_byte(0xd1);
                 send_byte(bp >> 8);
@@ -523,7 +523,7 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_SET_PC: {
-            uint8_t b = rq->wValue.word / 2;
+            uint16_t b = rq->wValue.word / 2;
             send_byte(0xd0);
             send_byte(b >> 8);
             send_byte(b);
