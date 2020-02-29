@@ -8,12 +8,13 @@
 
 #pragma once
 
-#define P_USCK (B, 7)
-#define P_DI   (B, 5)
-#define P_DO   (B, 6)
-#define P_TXD  (D, 1)
-#define P_LEDR (D, 5)
-#define P_LEDG (B, 0)
+#define P_USCK    (B, 7)
+#define P_DI      (B, 5)
+#define P_DO      (B, 6)
+#define P_TXD     (D, 1)
+#define P_LEDR    (D, 5)
+#define P_LEDG    (B, 0)
+#define P_CAP_SPI (B, 4)
 
 #define BIT_SET(reg, bit)   {(reg) |=  (1 << bit);}
 #define BIT_CLEAR(reg, bit) {(reg) &= ~(1 << bit);}

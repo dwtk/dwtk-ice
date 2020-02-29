@@ -52,8 +52,12 @@ extern volatile schar usbRxLen;
                           ((0b11111 & reg) << 4) | \
                           (0b1111 & addr)
 
+#define CAP_DW  (1 << 0)
+#define CAP_SPI (1 << 1)
+
 typedef enum {
     CMD_GET_ERROR = 1,
+    CMD_GET_CAPABILITIES,
 
     CMD_SPI_PGM_ENABLE = 0x20,
     CMD_SPI_PGM_DISABLE,
@@ -374,10 +378,15 @@ usbFunctionSetup(uchar data[8])
         }
     }
 
-
     switch (cmd) {
         case CMD_GET_ERROR: {
             // nothing to do, error is already set.
+            break;
+        }
+
+        case CMD_GET_CAPABILITIES: {
+            buf[0] = CAP_DW | (PIN_TEST(P_CAP_SPI) ? 0x00 : CAP_SPI);
+            rv++;
             break;
         }
 
@@ -685,6 +694,8 @@ main(void)
 
     DDR_SET(P_LEDG);
     DDR_SET(P_LEDR);
+    DDR_CLEAR(P_CAP_SPI);
+    PORT_SET(P_CAP_SPI);
 
     usbInit();
     usbDeviceDisconnect();
