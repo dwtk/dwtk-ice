@@ -1,0 +1,23 @@
+name: yatr
+on:
+  - push
+
+jobs:
+  yatr:
+    runs-on: ubuntu-18.04
+
+    strategy:
+      matrix:
+        target:
+          - dist-avr
+          - dist-avr-debug
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Run yatr
+        env:
+          TARGET: "${{ matrix.target }}"
+          DISTFILES_URL: "${{ secrets.DISTFILES_URL }}"
+        run: curl -sSf https://yatr.rgm.io/run.sh | bash
