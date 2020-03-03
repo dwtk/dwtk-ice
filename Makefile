@@ -1,102 +1,127 @@
-# programmer and mcu settings
-AVRDUDE_PROGRAMMER ?= usbtiny
-AVRDUDE_PORT ?= usb
-AVR_MCU ?= attiny4313
-AVR_CPU_FREQUENCY ?= 20000000UL
-USART_BREAK_TIME_US ?= 2500
+#
+# dwtk-makefile: A generic Makefile for AVR projects using dwtk.
+# Copyright (C) 2020 Rafael G. Martins <rafael@rafaelmartins.eng.br>
+#
+# This program can be distributed under the terms of the BSD 3-Clause License.
+# See https://opensource.org/licenses/BSD-3-Clause.
+#
 
-AVRDUDE = avrdude
-CC = avr-gcc
-OBJCOPY = avr-objcopy
-SIZE = avr-size
+include dwtk-config.mk
 
-# disable clock/8, run with external clock
-AVR_FUSE_LOW = 0xDF
+ifndef AVR_MCU
+$(error AVR_MCU must be defined)
+endif
 
-# spi programming enabled
-AVR_FUSE_HIGH_SPIEN = 0xDF
-# debugwire enabled
-AVR_FUSE_HIGH_DWEN = 0x5F
+ifndef FIRMWARE_SOURCES
+$(error FIRMWARE_SOURCES must be defined)
+endif
 
-AVR_FUSE_EXTENDED = 0xFF
+ifndef FIRMWARE_HEADERS
+$(error FIRMWARE_HEADERS must be defined)
+endif
+
+AVR_GCC     ?= $(shell which avr-gcc 2> /dev/null)
+AVR_OBJCOPY ?= $(shell which avr-objcopy 2> /dev/null)
+AVR_SIZE    ?= $(shell which avr-size 2> /dev/null)
+DWTK        ?= $(shell which dwtk 2> /dev/null)
+
+BUILDDIR 	  ?= .
+FIRMWARE_NAME ?= firmware
+
+OPTIMIZATION = -Os
+FIRMWARE_FILENAME = $(FIRMWARE_NAME)
+ifndef AVR_RELEASE
+OPTIMIZATION = -Og
+FIRMWARE_FILENAME = $(FIRMWARE_NAME)-debug
+endif
 
 CFLAGS = \
 	-std=gnu99 \
 	-mmcu=$(AVR_MCU) \
-	-DF_CPU=$(AVR_CPU_FREQUENCY) \
-	-DUSART_BREAK_TIME_US=$(USART_BREAK_TIME_US) \
-	-Os \
+	$(OPTIMIZATION) \
 	-ggdb \
 	-funsigned-char \
 	-funsigned-bitfields \
-	-fpack-struct \
 	-fshort-enums \
-	-fno-unit-at-a-time \
 	-Wall \
-	-Wno-implicit-fallthrough \
 	-Wextra \
 	-Werror \
-	-I. \
 	$(NULL)
 
-SOURCES = \
-	main.c \
-	usart.c \
-	usbdrv/usbdrv.c \
-	usbdrv/usbdrvasm.S \
-	$(NULL)
+ifdef AVR_F_CPU
+CFLAGS += -DF_CPU=$(AVR_F_CPU)
+endif
 
-HEADERS = \
-	bits.h \
-	usart.h \
-	usbconfig.h \
-	usbdrv/usbdrv.h \
-	$(NULL)
+DWTK_CMD = $(DWTK)
+ifdef DWTK_SERIAL
+DWTK_CMD += -s $(DWTK_SERIAL)
+endif
+ifdef DWTK_DEBUG
+DWTK_CMD += -d
+endif
 
-all: firmware.hex
+FUSES =
+ifdef AVR_LFUSE
+FUSES += --lfuse $(AVR_LFUSE)
+endif
+ifdef AVR_HFUSE
+FUSES += --hfuse $(AVR_HFUSE)
+endif
+ifdef AVR_EFUSE
+FUSES += --efuse $(AVR_EFUSE)
+endif
+ifdef AVR_LOCK
+FUSES += --lock $(AVR_LOCK)
+endif
 
-%.hex: %.elf
-	$(OBJCOPY) \
-		-O ihex \
-		-j .data \
-		-j .text \
-		$< \
-		$@
+GDBSERVER =
+ifdef GDBSERVER_ADDR
+GDBSERVER += -a $(GDBSERVER_ADDR)
+endif
 
-%.elf: $(SOURCES) $(HEADERS) Makefile
-	$(CC) \
-		$(CFLAGS) \
-		$(SOURCES) \
-		-o $@
+all: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf $(BUILDDIR)/$(FIRMWARE_FILENAME).hex
+
+.check-dwtk:
+	@test -n "$(DWTK)" || ( echo "error: dwtk not found"; exit 1 )
+
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
+
+$(BUILDDIR)/$(FIRMWARE_FILENAME).hex: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf | $(BUILDDIR)
+	@test -n "$(AVR_OBJCOPY)" || ( echo "error: avr-objcopy not found"; exit 1 )
+	$(AVR_OBJCOPY) -O ihex -j .data -j .text $< $@
+
+$(BUILDDIR)/$(FIRMWARE_FILENAME).elf: $(FIRMWARE_SOURCES) $(FIRMWARE_HEADERS) Makefile dwtk-config.mk | $(BUILDDIR)
+	@test -n "$(AVR_GCC)" || ( echo "error: avr-gcc not found" ; exit 1 )
+	$(AVR_GCC) -o $@ $(CFLAGS) $(FIRMWARE_CFLAGS) $(FIRMWARE_SOURCES)
 	@$(MAKE) --no-print-directory size
 
-size: firmware.elf
-	@echo;$(SIZE) \
-		--mcu=$(AVR_MCU) \
-		-C $<
+size: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf
+	@test -n "$(AVR_SIZE)" || ( echo "error: avr-size not found"; exit 1 )
+	echo; $(AVR_SIZE) --mcu=$(AVR_MCU) -C $<
 
-flash: firmware.hex
-	$(AVRDUDE) \
-		-p $(AVR_MCU) \
-		-c $(AVRDUDE_PROGRAMMER) \
-		-P $(AVRDUDE_PORT) \
-		-U flash:w:$< \
-		-U lfuse:w:$(AVR_FUSE_LOW):m \
-		-U hfuse:w:$(AVR_FUSE_HIGH_SPIEN):m \
-		-U efuse:w:$(AVR_FUSE_EXTENDED):m \
+dw-enable: .check-dwtk
+	$(DWTK_CMD) enable
 
-dw:
-	$(AVRDUDE) \
-		-p $(AVR_MCU) \
-		-c $(AVRDUDE_PROGRAMMER) \
-		-P $(AVRDUDE_PORT) \
-		-U lfuse:w:$(AVR_FUSE_LOW):m \
-		-U hfuse:w:$(AVR_FUSE_HIGH_DWEN):m \
-		-U efuse:w:$(AVR_FUSE_EXTENDED):m \
+dw-disable: .check-dwtk
+	$(DWTK_CMD) disable
+
+flash: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf .check-dwtk
+	$(DWTK_CMD) flash $(BUILDDIR)/$(FIRMWARE_FILENAME).elf
+
+verify: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf .check-dwtk
+	$(DWTK_CMD) verify $(BUILDDIR)/$(FIRMWARE_FILENAME).elf
+
+fuses: .check-dwtk
+	$(DWTK_CMD) fuses $(FUSES)
+
+gdbserver: .check-dwtk
+	$(DWTK_CMD) gdbserver $(GDBSERVER)
+
+info: .check-dwtk
+	$(DWTK_CMD) info
 
 clean:
-	-$(RM) \
-		firmware.elf \
-		firmware.hex
+	-$(RM) $(BUILDDIR)/$(FIRMWARE_FILENAME).{elf,hex}
 
-.PHONY: all size flash dw clean
+.PHONY: all .check-dwtk size dw-enable dw-disable flash verify fuses gdbserver info clean
