@@ -7,6 +7,7 @@
  */
 
 #include <stdbool.h>
+#include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -119,6 +120,10 @@ static uint8_t alloc[131] = {
 // first 3 bytes are for error reporting.
 static uint8_t *err = alloc;
 static uint8_t *buf = alloc + 3;
+
+int usbDescriptorStringSerialNumber[9] = {
+    USB_STRING_DESCRIPTOR_HEADER(8),
+};
 
 
 static void
@@ -691,6 +696,17 @@ int
 main(void)
 {
     wdt_enable(WDTO_2S);
+
+    for (int i = 0; i < 8; i++) {
+        uint8_t v = eeprom_read_byte((const uint8_t*) i);
+        if (v == 0 || v == 0xff) {
+            usbDescriptorStringSerialNumber[0] = USB_STRING_DESCRIPTOR_HEADER(0);
+            break;
+        }
+        usbDescriptorStringSerialNumber[i + 1] = v;
+    }
+
+    wdt_reset();
 
     DDR_SET(P_LEDG);
     DDR_SET(P_LEDR);
