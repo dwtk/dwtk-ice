@@ -10,7 +10,6 @@ jobs:
       matrix:
         target:
           - dist-avr
-          - dist-avr-debug
 
     steps:
       - name: Check out code
