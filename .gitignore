@@ -1,4 +1,5 @@
 *.elf
 *.hex
 .gdb*
+dwtk-config-local.mk
 /build/

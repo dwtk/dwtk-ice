@@ -122,7 +122,7 @@ static uint8_t *err = alloc;
 static uint8_t *buf = alloc + 3;
 
 int usbDescriptorStringSerialNumber[9] = {
-    USB_STRING_DESCRIPTOR_HEADER(8),
+    USB_STRING_DESCRIPTOR_HEADER(0),
 };
 
 
@@ -313,6 +313,13 @@ spi_reset(void)
     PORT_CLEAR(P_TXD);
     _delay_us(100);
     PORT_SET(P_TXD);
+}
+
+
+static char
+byte2hex(uint8_t v)
+{
+    return v > 9 ? v - 10 + 'a' : v + '0';
 }
 
 
@@ -697,13 +704,12 @@ main(void)
 {
     wdt_enable(WDTO_2S);
 
-    for (int i = 0; i < 8; i++) {
-        uint8_t v = eeprom_read_byte((const uint8_t*) i);
-        if (v == 0 || v == 0xff) {
-            usbDescriptorStringSerialNumber[0] = USB_STRING_DESCRIPTOR_HEADER(0);
-            break;
+    uint32_t d = eeprom_read_dword(0);
+    if (d != 0 && d != 0xffffffff) {
+        usbDescriptorStringSerialNumber[0] = USB_STRING_DESCRIPTOR_HEADER(8);
+        for (uint8_t i = 1, shift = 28; i <= 8; i++, shift -= 4) {
+            usbDescriptorStringSerialNumber[i] = byte2hex((d >> shift) & 0xf);
         }
-        usbDescriptorStringSerialNumber[i + 1] = v;
     }
 
     wdt_reset();

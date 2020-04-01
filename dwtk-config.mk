@@ -25,3 +25,5 @@ FIRMWARE_HEADERS = \
 	usbconfig.h \
 	usbdrv/usbdrv.h \
 	$(NULL)
+
+AVR_RELEASE = 1
