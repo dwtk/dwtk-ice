@@ -166,7 +166,7 @@ send_break(void)
     if (err[0] != ERR_NONE) {
         return;
     }
-    usart_send_break();
+    usart_send_break(pulse_width ? pulse_width : 3000);  // 3000 ticks * (1/20000000) = 150us
     recv_break();
 }
 
@@ -226,6 +226,7 @@ erase_flash_page(uint16_t start, bool set_start)
     write_instruction(DW_OUT(DW_SPMCSR, 29));
     write_instruction(DW_SPM());
     send_break();
+    _delay_ms(5);
 }
 
 
@@ -238,7 +239,7 @@ detect_pulse_width(void)
     TCCR1B = (1 << ICNC1) | (1 << CS10);
     TIFR = (1 << TOV1);
 
-    usart_send_break();
+    usart_send_break(3000);  // 3000 ticks * (1/20000000) = 150us
     while (!PIN_TEST(P_TXD));
 
     TCNT1 = 0;
@@ -688,6 +689,7 @@ usbFunctionWrite(uchar *data, uchar len)
             write_instruction(DW_OUT(DW_SPMCSR, 29));
             write_instruction(DW_SPM());
             send_break();
+            _delay_ms(5);
             break;
         }
 

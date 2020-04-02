@@ -53,13 +53,21 @@ usart_recv_byte(void)
 
 
 void
-usart_send_break(void)
+usart_send_break(uint16_t pulse_width)
 {
     while (!(UCSRA & (1 << UDRE)));
     UCSRB &= ~(1 << TXEN);
     DDR_SET(P_TXD);
     PORT_CLEAR(P_TXD);
-    _delay_us(USART_BREAK_TIME_US);
+    while (pulse_width--) {
+        // given our UCSZ and USBS settings:
+        // - each frame is 1 start bit + 8 data bits + 1 stop bit = 10 bits
+        // - each break is at least 2 frame errors, we send 3 = 30 bits
+        //
+        // cycles spent by the while loop and interruptions are ok. bigger
+        // delays are fine, we just want to make sure that the break is sent.
+        __builtin_avr_delay_cycles(30);
+    }
     PORT_SET(P_TXD);
     DDR_CLEAR(P_TXD);
     UCSRB |= (1 << TXEN);
