@@ -22,3 +22,10 @@ FIRMWARE_HEADERS = \
 	usbconfig.h \
 	usbdrv/usbdrv.h \
 	$(NULL)
+
+write-serial-number: .check-dwtk
+	SN="$$((RANDOM % 256)) $$((RANDOM % 256)) $$((RANDOM % 256)) $$((RANDOM % 256))"; \
+	printf "\nSerial number: %02x%02x%02x%02x\n" $${SN}; \
+	$(DWTK_CMD) eeprom-bytes $${SN}
+
+.PHONY: write-serial-number
