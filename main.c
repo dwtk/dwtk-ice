@@ -121,9 +121,7 @@ static uint8_t alloc[131] = {
 static uint8_t *err = alloc;
 static uint8_t *buf = alloc + 3;
 
-int usbDescriptorStringSerialNumber[9] = {
-    USB_STRING_DESCRIPTOR_HEADER(0),
-};
+int usbDescriptorStringSerialNumber[9];
 
 
 static void
@@ -314,13 +312,6 @@ spi_reset(void)
     PORT_CLEAR(P_TXD);
     _delay_us(100);
     PORT_SET(P_TXD);
-}
-
-
-static char
-byte2hex(uint8_t v)
-{
-    return v > 9 ? v - 10 + 'a' : v + '0';
 }
 
 
@@ -701,20 +692,23 @@ usbFunctionWrite(uchar *data, uchar len)
 }
 
 
+static char
+byte2hex(uint8_t v)
+{
+    return v > 9 ? v - 10 + 'a' : v + '0';
+}
+
+
 int
 main(void)
 {
     wdt_enable(WDTO_2S);
 
     uint32_t d = eeprom_read_dword(0);
-    if (d != 0 && d != 0xffffffff) {
-        usbDescriptorStringSerialNumber[0] = USB_STRING_DESCRIPTOR_HEADER(8);
-        for (uint8_t i = 1, shift = 28; i <= 8; i++, shift -= 4) {
-            usbDescriptorStringSerialNumber[i] = byte2hex((d >> shift) & 0xf);
-        }
+    usbDescriptorStringSerialNumber[0] = USB_STRING_DESCRIPTOR_HEADER(8);
+    for (uint8_t i = 0; i < 8; i++) {
+        usbDescriptorStringSerialNumber[i % 2 ? i : i + 2] = byte2hex((d >> (4 * i)) & 0xf);
     }
-
-    wdt_reset();
 
     DDR_SET(P_LEDG);
     DDR_SET(P_LEDR);
@@ -724,9 +718,9 @@ main(void)
     usbInit();
     usbDeviceDisconnect();
 
+    wdt_reset();
     uint8_t i = 0xff;
     while (i--) {
-        wdt_reset();
         _delay_ms(1);
     }
     usbDeviceConnect();
@@ -739,7 +733,6 @@ main(void)
         PORT_CLEAR(P_LEDG);
         if (detect_baudrate) {
             detect_baudrate = false;
-            wdt_reset();
             while (usbRxLen);
             usart_clear();
             pulse_width = detect_pulse_width();
