@@ -26,12 +26,12 @@ AVR_OBJCOPY ?= $(shell which avr-objcopy 2> /dev/null)
 AVR_SIZE    ?= $(shell which avr-size 2> /dev/null)
 DWTK        ?= $(shell which dwtk 2> /dev/null)
 
-BUILDDIR 	  ?= .
+BUILDDIR      ?= .
 FIRMWARE_NAME ?= firmware
 
 OPTIMIZATION = -Os
 FIRMWARE_FILENAME = $(FIRMWARE_NAME)
-ifndef AVR_RELEASE
+ifneq ($(AVR_RELEASE),1)
 OPTIMIZATION = -Og
 FIRMWARE_FILENAME = $(FIRMWARE_NAME)-debug
 endif
