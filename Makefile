@@ -38,7 +38,7 @@ endif
 
 CFLAGS = \
 	-std=gnu99 \
-	-mmcu=$(AVR_MCU) \
+	-mmcu="$(AVR_MCU)" \
 	$(OPTIMIZATION) \
 	-ggdb \
 	-funsigned-char \
@@ -50,12 +50,15 @@ CFLAGS = \
 	$(NULL)
 
 ifdef AVR_F_CPU
-CFLAGS += -DF_CPU=$(AVR_F_CPU)
+CFLAGS += -DF_CPU="$(AVR_F_CPU)"
 endif
 
 DWTK_CMD = $(DWTK)
+ifdef DWTK_ICE
+DWTK_CMD += -i "$(DWTK_ICE)"
+endif
 ifdef DWTK_SERIAL
-DWTK_CMD += -s $(DWTK_SERIAL)
+DWTK_CMD += -s "$(DWTK_SERIAL)"
 endif
 ifdef DWTK_DEBUG
 DWTK_CMD += -d
@@ -63,21 +66,21 @@ endif
 
 FUSES =
 ifdef AVR_LFUSE
-FUSES += --lfuse $(AVR_LFUSE)
+FUSES += --lfuse "$(AVR_LFUSE)"
 endif
 ifdef AVR_HFUSE
-FUSES += --hfuse $(AVR_HFUSE)
+FUSES += --hfuse "$(AVR_HFUSE)"
 endif
 ifdef AVR_EFUSE
-FUSES += --efuse $(AVR_EFUSE)
+FUSES += --efuse "$(AVR_EFUSE)"
 endif
 ifdef AVR_LOCK
-FUSES += --lock $(AVR_LOCK)
+FUSES += --lock "$(AVR_LOCK)"
 endif
 
 GDBSERVER =
 ifdef GDBSERVER_ADDR
-GDBSERVER += -a $(GDBSERVER_ADDR)
+GDBSERVER += -a "$(GDBSERVER_ADDR)"
 endif
 
 .all: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf $(BUILDDIR)/$(FIRMWARE_FILENAME).hex
@@ -86,7 +89,7 @@ endif
 	@test -n "$(DWTK)" || ( echo "error: dwtk not found"; exit 1 )
 
 $(BUILDDIR):
-	mkdir -p $(BUILDDIR)
+	mkdir -p "$(BUILDDIR)"
 
 $(BUILDDIR)/$(FIRMWARE_FILENAME).hex: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf | $(BUILDDIR)
 	@test -n "$(AVR_OBJCOPY)" || ( echo "error: avr-objcopy not found"; exit 1 )
@@ -99,12 +102,12 @@ $(BUILDDIR)/$(FIRMWARE_FILENAME).elf: $(FIRMWARE_SOURCES) $(FIRMWARE_HEADERS) Ma
 
 size: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf
 	@test -n "$(AVR_SIZE)" || ( echo "error: avr-size not found"; exit 1 )
-	echo; $(AVR_SIZE) --mcu=$(AVR_MCU) -C $<
+	echo; $(AVR_SIZE) --mcu="$(AVR_MCU)" -C $<
 
-dw-enable: .check-dwtk
+enable: .check-dwtk
 	$(DWTK_CMD) enable
 
-dw-disable: .check-dwtk
+disable: .check-dwtk
 	$(DWTK_CMD) disable
 
 flash: $(BUILDDIR)/$(FIRMWARE_FILENAME).elf .check-dwtk
@@ -125,4 +128,4 @@ info: .check-dwtk
 clean:
 	-$(RM) $(BUILDDIR)/$(FIRMWARE_FILENAME).{elf,hex}
 
-.PHONY: all .all .check-dwtk size dw-enable dw-disable flash verify fuses gdbserver info clean
+.PHONY: all .all .check-dwtk size enable disable flash verify fuses gdbserver info clean
