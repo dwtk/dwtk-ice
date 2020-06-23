@@ -16,8 +16,6 @@
 #include "usart.h"
 #include "usbdrv/usbdrv.h"
 
-extern volatile schar usbRxLen;
-
 #define FREQ_MHZ (F_CPU/1000000)
 
 #define DW_SPMEN (1 << 0)
@@ -733,7 +731,6 @@ main(void)
         PORT_CLEAR(P_LEDG);
         if (detect_baudrate) {
             detect_baudrate = false;
-            while (usbRxLen);
             usart_clear();
             pulse_width = detect_pulse_width();
             if (err[0] == ERR_NONE) {
