@@ -350,7 +350,7 @@ usbFunctionSetup(uchar data[8])
 
     request_len = rq->wLength.word;
     if (request_len > 0 && !write) {
-        request_len--;
+        request_len -= 3;  // size of err isn't part of request
     }
     remaining = request_len;
 
