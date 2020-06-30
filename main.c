@@ -149,10 +149,9 @@ recv_break(void)
     if (0x55 != c) {
         err[0] = ERR_BREAK_MISMATCH;
         err[1] = c;
+        return;
     }
-    else {
-        after_break = true;
-    }
+    after_break = true;
 }
 
 
