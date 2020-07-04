@@ -8,6 +8,53 @@
 
 #pragma once
 
+#ifndef TIFR
+#define TIFR TIFR0
+#endif
+#ifndef UCSRA
+#define UCSRA UCSR0A
+#endif
+#ifndef UCSRB
+#define UCSRB UCSR0B
+#endif
+#ifndef UCSRC
+#define UCSRC UCSR0C
+#endif
+#ifndef UCSZ0
+#define UCSZ0 UCSZ00
+#endif
+#ifndef UBRRL
+#define UBRRL UBRR0L
+#endif
+#ifndef UBRRH
+#define UBRRH UBRR0H
+#endif
+#ifndef RXEN
+#define RXEN RXEN0
+#endif
+#ifndef TXEN
+#define TXEN TXEN0
+#endif
+#ifndef RXC
+#define RXC RXC0
+#endif
+#ifndef TXC
+#define TXC TXC0
+#endif
+#ifndef UDR
+#define UDR UDR0
+#endif
+#ifndef UDRE
+#define UDRE UDRE0
+#endif
+#ifndef FE
+#define FE FE0
+#endif
+#ifndef U2X
+#define U2X U2X0
+#endif
+
+#ifdef __AVR_ATtiny4313__
 #define P_USCK    (B, 7)
 #define P_DI      (B, 5)
 #define P_DO      (B, 6)
@@ -15,6 +62,15 @@
 #define P_LEDR    (D, 5)
 #define P_LEDG    (B, 0)
 #define P_CAP_SPI (B, 4)
+#else
+#define P_USCK    (B, 5)
+#define P_DI      (B, 4)
+#define P_DO      (B, 3)
+#define P_TXD     (D, 1)
+#define P_LEDR    (D, 7)
+#define P_LEDG    (B, 1)
+#define P_CAP_SPI (C, 0)
+#endif
 
 #define BIT_SET(reg, bit)   {(reg) |=  (1 << bit);}
 #define BIT_CLEAR(reg, bit) {(reg) &= ~(1 << bit);}

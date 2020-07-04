@@ -10,6 +10,8 @@
 #ifndef __usbconfig_h_included__
 #define __usbconfig_h_included__
 
+#include "bits.h"
+
 /*
 General Description:
 This file is an example configuration (with inline documentation) for the USB
@@ -157,7 +159,7 @@ section at the end of this file).
  */
 #define USB_RX_USER_HOOK(data, len) \
     if (usbRxToken == (uchar) USBPID_SETUP) { \
-        PORTB |= (1 << 0); \
+        PORT_SET(P_LEDG); \
     }
 /* This macro is a hook if you want to do unconventional things. If it is
  * defined, it's inserted at the beginning of received message processing.
@@ -167,14 +169,14 @@ section at the end of this file).
  */
 #define USB_RESET_HOOK(resetStarts) \
     if (resetStarts) { \
-        PORTD &= ~(1 << 5); \
+        PORT_CLEAR(P_LEDR); \
     }
 /* This macro is a hook if you need to know when an USB RESET occurs. It has
  * one parameter which distinguishes between the start of RESET state and its
  * end.
  */
 #define USB_SET_ADDRESS_HOOK() \
-    PORTD |= (1 << 5);
+    PORT_SET(P_LEDR);
 /* This macro (if defined) is executed when a USB SET_ADDRESS request was
  * received.
  */

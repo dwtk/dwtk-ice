@@ -291,6 +291,7 @@ spi(uint8_t c)
     if (err[0] != ERR_NONE) {
         return 0;
     }
+#if defined(USIDR)
     USIDR = c;
     USISR = (1 << USIOIF);
     while (!(USISR & (1 << USIOIF))) {
@@ -298,6 +299,13 @@ spi(uint8_t c)
         _delay_us(10);
     }
     return USIDR;
+#elif defined(SPDR)
+    SPDR = c;
+    while(!(SPSR & (1 << SPIF)));
+    return SPDR;
+#else
+#   error "No valid SPI implementation found."
+#endif
 }
 
 
@@ -360,14 +368,21 @@ usbFunctionSetup(uchar data[8])
                 DDR_SET(P_DO);
                 DDR_SET(P_USCK);
                 DDR_SET(P_TXD);
+#ifdef SPCR
+                SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+#else
                 PORT_CLEAR(P_DO);
                 PORT_CLEAR(P_USCK);
                 PORT_CLEAR(P_TXD);
+#endif
                 mode_spi = true;
             }
         }
         else {  // debugWIRE
             if (mode_spi) {
+#ifdef SPCR
+                SPCR = 0;
+#endif
                 DDR_CLEAR(P_DO);
                 DDR_CLEAR(P_USCK);
                 DDR_CLEAR(P_TXD);
