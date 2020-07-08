@@ -18,11 +18,13 @@
 
 #define FREQ_MHZ (F_CPU/1000000)
 
-#define DW_SPMEN (1 << 0)
-#define DW_PGERS (1 << 1)
-#define DW_PGWRT (1 << 2)
-#define DW_RFLB  (1 << 3)
-#define DW_CTPB  (1 << 4)
+#define DW_SPMEN  (1 << 0)
+#define DW_PGERS  (1 << 1)
+#define DW_PGWRT  (1 << 2)
+#define DW_RFLB   (1 << 3)
+#define DW_CTPB   (1 << 4)
+#define DW_RWWSRE (1 << 4)
+#define DW_RWWSB  (1 << 6)
 
 #define DW_SPMCSR 0x37
 
@@ -110,6 +112,7 @@ static uint16_t flash_page_start = 0;
 static uint16_t pulse_width = 0;
 static uint16_t request_len = 0;
 static uint16_t remaining = 0;
+static uint16_t rww_start = 0;
 static uint16_t ubrr = 0xffff;
 static usb_command_t cmd = 0;
 
@@ -189,12 +192,19 @@ send_byte(uint8_t b)
 
 
 static void
+set_pc(uint16_t pc)
+{
+    send_byte(0xd0);
+    send_byte(pc >> 8);
+    send_byte(pc);
+}
+
+
+static void
 registers(uint8_t start, uint8_t len, bool write)
 {
     send_byte(0x66);
-    send_byte(0xd0);
-    send_byte(0x00);
-    send_byte(start);
+    set_pc(start);
     send_byte(0xd1);
     send_byte(0x00);
     send_byte(start + len);
@@ -235,6 +245,7 @@ static void
 spm(void)
 {
     write_instruction(DW_OUT(DW_SPMCSR, 29));
+    set_pc(rww_start);
     write_instruction(DW_SPM());
 }
 
@@ -301,9 +312,7 @@ sram_flash(uint16_t addr, uint8_t d0, uint16_t d1, uint8_t c2)
     send_byte(addr);
     send_byte(addr >> 8);
     send_byte(0x66);
-    send_byte(0xd0);
-    send_byte(0x00);
-    send_byte(d0);
+    set_pc(d0);
     send_byte(0xd1);
     send_byte(d1 >> 8);
     send_byte(d1);
@@ -576,10 +585,7 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_SET_PC: {
-            uint16_t b = rq->wValue.word / 2;
-            send_byte(0xd0);
-            send_byte(b >> 8);
-            send_byte(b);
+            set_pc(rq->wValue.word / 2);
             after_break = false;
             break;
         }
@@ -632,6 +638,7 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_WRITE_FLASH_PAGE: {
+            rww_start = rq->wIndex.word / 2;
             registers(29, 3, true);
             send_byte(DW_CTPB | DW_SPMEN);
             send_byte(rq->wValue.word);
@@ -649,6 +656,7 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_ERASE_FLASH_PAGE: {
+            rww_start = rq->wIndex.word / 2;
             erase_flash_page(rq->wValue.word, true);
             break;
         }
@@ -717,6 +725,14 @@ usbFunctionWrite(uchar *data, uchar len)
             send_byte(flash_page_start >> 8);
             spm();
             wait_spmcsr(DW_SPMEN);
+
+            if (rww_start) {
+                registers(29, 1, true);
+                send_byte(DW_RWWSRE | DW_SPMEN);
+                spm();
+                wait_spmcsr(DW_RWWSB);
+            }
+
             break;
         }
 
