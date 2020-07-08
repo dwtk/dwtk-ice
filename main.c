@@ -51,6 +51,12 @@
                           ((0b11111 & reg) << 4) | \
                           (0b1111 & addr)
 
+// opcode: 1011 0AAd dddd AAAA
+#define DW_IN(addr, reg)  0b1011000000000000 | \
+                          ((0b110000 & addr) << 5) | \
+                          ((0b11111 & reg) << 4) | \
+                          (0b1111 & addr)
+
 #define CAP_DW  (1 << 0)
 #define CAP_SPI (1 << 1)
 
@@ -210,6 +216,30 @@ write_instruction(uint16_t inst)
 
 
 static void
+wait_spmcsr(uint8_t mask)
+{
+    wdt_reset();
+    send_break();
+    for (uint8_t i = 0; i < 0xff; i++) {
+        write_instruction(DW_IN(DW_SPMCSR, 29));
+        _delay_ms(5);  // FIXME
+        registers(29, 1, false);
+        if ((mask & usart_recv_byte()) == 0) {
+            return;
+        }
+    }
+}
+
+
+static void
+spm(void)
+{
+    write_instruction(DW_OUT(DW_SPMCSR, 29));
+    write_instruction(DW_SPM());
+}
+
+
+static void
 erase_flash_page(uint16_t start, bool set_start)
 {
     registers(29, set_start ? 3 : 1, true);
@@ -218,10 +248,8 @@ erase_flash_page(uint16_t start, bool set_start)
         send_byte(start);
         send_byte(start >> 8);
     }
-    write_instruction(DW_OUT(DW_SPMCSR, 29));
-    write_instruction(DW_SPM());
-    send_break();
-    _delay_ms(5);
+    spm();
+    wait_spmcsr(DW_SPMEN);
 }
 
 
@@ -608,8 +636,7 @@ usbFunctionSetup(uchar data[8])
             send_byte(DW_CTPB | DW_SPMEN);
             send_byte(rq->wValue.word);
             send_byte(rq->wValue.word >> 8);
-            write_instruction(DW_OUT(DW_SPMCSR, 29));
-            write_instruction(DW_SPM());
+            spm();
             send_break();
 
             erase_flash_page(0, false);
@@ -679,8 +706,7 @@ usbFunctionWrite(uchar *data, uchar len)
                 registers(0, 2, true);
                 send_byte(buf[i++]);
                 send_byte(buf[i++]);
-                write_instruction(DW_OUT(DW_SPMCSR, 29));
-                write_instruction(DW_SPM());
+                spm();
                 write_instruction(DW_ADIW(30, 2));
             }
 
@@ -689,10 +715,8 @@ usbFunctionWrite(uchar *data, uchar len)
             send_byte(DW_PGWRT | DW_SPMEN);
             send_byte(flash_page_start);
             send_byte(flash_page_start >> 8);
-            write_instruction(DW_OUT(DW_SPMCSR, 29));
-            write_instruction(DW_SPM());
-            send_break();
-            _delay_ms(5);
+            spm();
+            wait_spmcsr(DW_SPMEN);
             break;
         }
 
