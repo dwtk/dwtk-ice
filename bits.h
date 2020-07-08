@@ -9,7 +9,7 @@
 #pragma once
 
 #ifndef TIFR
-#define TIFR TIFR0
+#define TIFR TIFR1
 #endif
 #ifndef UCSRA
 #define UCSRA UCSR0A
