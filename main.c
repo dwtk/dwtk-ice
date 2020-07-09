@@ -91,6 +91,7 @@ typedef enum {
 
 typedef enum {
     ERR_NONE = 0,
+    ERR_UNSUPPORTED,
 
     ERR_SPI_PGM_ENABLE = 0x20,
     ERR_SPI_ECHO_MISMATCH,
@@ -658,6 +659,9 @@ usbFunctionSetup(uchar data[8])
         }
 
         case CMD_READ_FUSES: {
+#if defined(__AVR_ATtiny4313__) && defined(DEBUG)
+            err[0] = ERR_UNSUPPORTED;
+#else
             registers(30, 2, true);
             send_byte(0x00);
             send_byte(0x00);
@@ -670,6 +674,7 @@ usbFunctionSetup(uchar data[8])
                 buf[i] = usart_recv_byte();
             }
             rv += 4;
+#endif
             break;
         }
     }

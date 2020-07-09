@@ -30,9 +30,11 @@ BUILDDIR      ?= .
 FIRMWARE_NAME ?= firmware
 
 OPTIMIZATION = -Os
+DEBUG = -DNDEBUG
 FIRMWARE_FILENAME = $(FIRMWARE_NAME)
 ifneq ($(AVR_RELEASE),1)
 OPTIMIZATION = -Og
+DEBUG = -DDEBUG
 FIRMWARE_FILENAME = $(FIRMWARE_NAME)-debug
 endif
 
@@ -40,6 +42,7 @@ CFLAGS = \
 	-std=gnu99 \
 	-mmcu="$(AVR_MCU)" \
 	$(OPTIMIZATION) \
+	$(DEBUG) \
 	-ggdb \
 	-funsigned-char \
 	-funsigned-bitfields \
