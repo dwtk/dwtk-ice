@@ -9,8 +9,10 @@ jobs:
     strategy:
       matrix:
         target:
-          - dist-avr
-          - dist-avr-debug
+          - dist-attiny4313
+          - dist-attiny4313-debug
+          - dist-atmega88pa
+          - dist-atmega88pa-debug
 
     steps:
       - name: Check out code
