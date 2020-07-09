@@ -28,25 +28,21 @@
 
 #define DW_SPMCSR 0x37
 
-// https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_LPM.html
 // opcode: 1001 000d dddd 0100 - Z
 // opcode: 1001 000d dddd 0101 - Z+
 #define DW_LPM(reg, inc)  0b1001000000000100 | \
                           ((0b11111 & reg) << 4) | \
                           (0b1 & inc)
 
-// https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_SPM.html
 // opcode: 1001 0101 1110 1000
 #define DW_SPM()          0b1001010111101000
 
-// https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_ADIW.html
 // opcode: 1001 0110 KKdd KKKK
 #define DW_ADIW(reg, val) 0b1001011000000000 | \
                           ((0b110000 & val) << 2) | \
                           ((0b110 & (reg - 24)) << 3) | \
                           (0b1111 & val)
 
-// https://www.microchip.com/webdoc/avrassembler/avrassembler.wb_OUT.html
 // opcode: 1011 1AAr rrrr AAAA
 #define DW_OUT(addr, reg) 0b1011100000000000 | \
                           ((0b110000 & addr) << 5) | \
