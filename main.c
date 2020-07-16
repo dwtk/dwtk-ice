@@ -403,7 +403,7 @@ usbFunctionSetup(uchar data[8])
                 DDR_SET(P_USCK);
                 DDR_SET(P_TXD);
 #ifdef SPCR
-                SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+                SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0) | (1 << SPR1);
 #else
                 PORT_CLEAR(P_DO);
                 PORT_CLEAR(P_USCK);
