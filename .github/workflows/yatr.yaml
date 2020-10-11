@@ -2,6 +2,7 @@ name: yatr
 on:
   push:
     paths-ignore:
+      - '.github/workflows/kicad.yaml'
       - 'hardware/**'
       - 'images/**'
 

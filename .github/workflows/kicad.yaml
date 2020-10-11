@@ -1,0 +1,58 @@
+name: kicad
+on:
+  push:
+    paths:
+      - '.github/workflows/kicad.yaml'
+      - 'hardware/**'
+  workflow_dispatch:
+
+jobs:
+  kicad:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Check out InteractiveHtmlBom
+        uses: actions/checkout@v2
+        with:
+          repository: openscopeproject/InteractiveHtmlBom
+          ref: 6c70a9d576a2a633b733d41643f6015329f37087
+          path: InteractiveHtmlBom
+
+      - name: Install dependencies
+        run: |
+          sudo add-apt-repository -y ppa:kicad/kicad-5.1-releases
+          sudo apt update
+          sudo apt install -y --no-install-recommends kicad
+
+      - name: Generate interactive BOMs
+        run: |
+          for variant in dwtk-ice dwtk-ice-lite dwtk-ice-mega; do
+              python3 ./InteractiveHtmlBom/InteractiveHtmlBom/generate_interactive_bom.py \
+                  --dark-mode \
+                  --no-browser \
+                  --dest-dir ../../build/ \
+                  --name-format "%f" \
+                  --include-tracks \
+                  --include-nets \
+                  --netlist-file "./hardware/$variant/$variant.net" \
+                  --extra-fields "Reichelt Ref." \
+                  "./hardware/$variant/$variant.kicad_pcb"
+          done
+          tar \
+              -cJvf "dwtk-ice-bom-$(date -u '+%Y%m%d%H%M%S').tar.xz" \
+              -C "./build" \
+              .
+        env:
+          INTERACTIVE_HTML_BOM_NO_DISPLAY: "1"
+
+      - name: Upload interactive BOMs
+        run: |
+          curl "${{ secrets.DISTFILES_URL }}" \
+              -F "file=@$(ls -1 dwtk-ice-bom-* | head -n 1)" \
+              -F "project=dwtk-ice-bom" \
+              -F "version=$(ls -1 dwtk-ice-bom-* | head -n 1 | cut -d- -f4 | cut -d. -f1)" \
+              -F "sha512=$(sha512sum dwtk-ice-bom-*)" \
+              -F "extract=true"
