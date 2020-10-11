@@ -3,3 +3,16 @@
 .gdb*
 dwtk-config-local.mk
 /build/
+
+# KiCad
+*.000
+*.bak
+*.bck
+*.kicad_pcb-bak
+*~
+_autosave-*
+*.tmp
+*.dsn
+*.ses
+*.sch-bak
+fp-info-cache

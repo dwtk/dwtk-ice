@@ -1,0 +1,766 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title "dwtk-ice mega"
+Date "2020-10-10"
+Rev "2.1"
+Comp "dwtk.rgm.io"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 "Designed by: Rafael G. Martins"
+$EndDescr
+$Comp
+L Connector:USB_B_Mini J1
+U 1 1 5F7F26AF
+P 5050 4750
+F 0 "J1" H 4820 4739 50  0000 R CNN
+F 1 "USB B Mini Female" H 4820 4648 50  0000 R CNN
+F 2 "custom-footprints:RND_205-00862" H 5200 4700 50  0001 C CNN
+F 3 "~" H 5200 4700 50  0001 C CNN
+F 4 "RND 205-00862" H 5050 4750 50  0001 C CNN "Reichelt Ref."
+	1    5050 4750
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Device:R R1
+U 1 1 5F801EC7
+P 3200 4750
+F 0 "R1" V 3450 4750 50  0000 C CNN
+F 1 "68" V 3350 4750 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 3130 4750 50  0001 C CNN
+F 3 "~" H 3200 4750 50  0001 C CNN
+F 4 "1/4W 68" H 3200 4750 50  0001 C CNN "Reichelt Ref."
+	1    3200 4750
+	0    1    -1   0   
+$EndComp
+$Comp
+L Device:R R2
+U 1 1 5F803373
+P 3650 4850
+F 0 "R2" V 3443 4850 50  0000 C CNN
+F 1 "68" V 3534 4850 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 3580 4850 50  0001 C CNN
+F 3 "~" H 3650 4850 50  0001 C CNN
+F 4 "1/4W 68" H 3650 4850 50  0001 C CNN "Reichelt Ref."
+	1    3650 4850
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:D_Zener D1
+U 1 1 5F809EF8
+P 4300 5400
+F 0 "D1" V 4254 5480 50  0000 L CNN
+F 1 "3,6" V 4345 5480 50  0000 L CNN
+F 2 "Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal" H 4300 5400 50  0001 C CNN
+F 3 "~" H 4300 5400 50  0001 C CNN
+F 4 "ZF 3,6" H 4300 5400 50  0001 C CNN "Reichelt Ref."
+	1    4300 5400
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR0102
+U 1 1 5F80AA1A
+P 4250 3550
+F 0 "#PWR0102" H 4250 3300 50  0001 C CNN
+F 1 "GND" H 4255 3377 50  0000 C CNN
+F 2 "" H 4250 3550 50  0001 C CNN
+F 3 "" H 4250 3550 50  0001 C CNN
+	1    4250 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0103
+U 1 1 5F80B0B2
+P 4050 5800
+F 0 "#PWR0103" H 4050 5550 50  0001 C CNN
+F 1 "GND" H 4055 5627 50  0000 C CNN
+F 2 "" H 4050 5800 50  0001 C CNN
+F 3 "" H 4050 5800 50  0001 C CNN
+	1    4050 5800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R3
+U 1 1 5F80C398
+P 3650 4950
+F 0 "R3" V 3765 4950 50  0000 C CNN
+F 1 "2k2" V 3856 4950 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 3580 4950 50  0001 C CNN
+F 3 "~" H 3650 4950 50  0001 C CNN
+F 4 "1/4W 2,2K" H 3650 4950 50  0001 C CNN "Reichelt Ref."
+	1    3650 4950
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:D_Zener D2
+U 1 1 5F808F81
+P 3800 5400
+F 0 "D2" V 3754 5480 50  0000 L CNN
+F 1 "3,6" V 3845 5480 50  0000 L CNN
+F 2 "Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal" H 3800 5400 50  0001 C CNN
+F 3 "~" H 3800 5400 50  0001 C CNN
+F 4 "ZF 3,6" H 3800 5400 50  0001 C CNN "Reichelt Ref."
+	1    3800 5400
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:LED D3
+U 1 1 5F812A6F
+P 2850 6050
+F 0 "D3" V 2889 5932 50  0000 R CNN
+F 1 "Red" V 2798 5932 50  0000 R CNN
+F 2 "LED_THT:LED_D3.0mm" H 2850 6050 50  0001 C CNN
+F 3 "~" H 2850 6050 50  0001 C CNN
+F 4 "RND 135-00155" H 2850 6050 50  0001 C CNN "Reichelt Ref."
+	1    2850 6050
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R4
+U 1 1 5F8135B8
+P 2850 5600
+F 0 "R4" H 2920 5646 50  0000 L CNN
+F 1 "1k5" H 2920 5555 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 2780 5600 50  0001 C CNN
+F 3 "~" H 2850 5600 50  0001 C CNN
+F 4 "1/4W 1,5K" H 2850 5600 50  0001 C CNN "Reichelt Ref."
+	1    2850 5600
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R5
+U 1 1 5F831499
+P 1250 2900
+F 0 "R5" H 1320 2946 50  0000 L CNN
+F 1 "1k5" H 1320 2855 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 1180 2900 50  0001 C CNN
+F 3 "~" H 1250 2900 50  0001 C CNN
+F 4 "1/4W 1,5K" H 1250 2900 50  0001 C CNN "Reichelt Ref."
+	1    1250 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:LED D4
+U 1 1 5F831A6D
+P 1250 3350
+F 0 "D4" V 1289 3430 50  0000 L CNN
+F 1 "Green" V 1198 3430 50  0000 L CNN
+F 2 "LED_THT:LED_D3.0mm" H 1250 3350 50  0001 C CNN
+F 3 "~" H 1250 3350 50  0001 C CNN
+F 4 "RND 135-00157" H 1250 3350 50  0001 C CNN "Reichelt Ref."
+	1    1250 3350
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:C C3
+U 1 1 5F85E41C
+P 3800 3750
+F 0 "C3" V 3950 3750 50  0000 C CNN
+F 1 "22p" V 4050 3750 50  0000 C CNN
+F 2 "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 3838 3600 50  0001 C CNN
+F 3 "~" H 3800 3750 50  0001 C CNN
+F 4 "KERKO 22P" H 3800 3750 50  0001 C CNN "Reichelt Ref."
+	1    3800 3750
+	0    1    1    0   
+$EndComp
+$Comp
+L Connector:Conn_01x02_Female J2
+U 1 1 5F884204
+P 3400 4200
+F 0 "J2" H 3292 3875 50  0000 C CNN
+F 1 "JST XH2P Female" H 3350 3950 50  0000 C CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 3400 4200 50  0001 C CNN
+F 3 "~" H 3400 4200 50  0001 C CNN
+F 4 "JST XH2P ST" H 3400 4200 50  0001 C CNN "Reichelt Ref."
+	1    3400 4200
+	1    0    0    1   
+$EndComp
+$Comp
+L Transistor_BJT:BC548 Q1
+U 1 1 5F8912DC
+P 6500 4200
+F 0 "Q1" H 6691 4246 50  0000 L CNN
+F 1 "BC548" H 6691 4155 50  0000 L CNN
+F 2 "Package_TO_SOT_THT:TO-92_Inline" H 6700 4125 50  0001 L CIN
+F 3 "http://www.fairchildsemi.com/ds/BC/BC547.pdf" H 6500 4200 50  0001 L CNN
+F 4 "BC 548B" H 6500 4200 50  0001 C CNN "Reichelt Ref."
+	1    6500 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R7
+U 1 1 5F8921E9
+P 6350 4600
+F 0 "R7" V 6465 4600 50  0000 C CNN
+F 1 "470" V 6556 4600 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 6280 4600 50  0001 C CNN
+F 3 "~" H 6350 4600 50  0001 C CNN
+F 4 "1/4W 470" H 6350 4600 50  0001 C CNN "Reichelt Ref."
+	1    6350 4600
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6500 4600 6600 4600
+Wire Wire Line
+	6600 4600 6600 4400
+$Comp
+L Device:R R6
+U 1 1 5F89D318
+P 6300 3600
+F 0 "R6" H 6370 3646 50  0000 L CNN
+F 1 "22k" H 6370 3555 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 6230 3600 50  0001 C CNN
+F 3 "~" H 6300 3600 50  0001 C CNN
+F 4 "1/4W 22K" H 6300 3600 50  0001 C CNN "Reichelt Ref."
+	1    6300 3600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6300 4200 6300 3750
+$Comp
+L Connector:Conn_01x02_Female J3
+U 1 1 5F8A237E
+P 7400 3350
+F 0 "J3" H 7428 3326 50  0000 L CNN
+F 1 "JST XH2P Female" H 7428 3235 50  0000 L CNN
+F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 7400 3350 50  0001 C CNN
+F 3 "~" H 7400 3350 50  0001 C CNN
+F 4 "JST XH2P ST" H 7400 3350 50  0001 C CNN "Reichelt Ref."
+	1    7400 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0108
+U 1 1 5F8A5FE3
+P 7000 3550
+F 0 "#PWR0108" H 7000 3300 50  0001 C CNN
+F 1 "GND" H 7005 3377 50  0000 C CNN
+F 2 "" H 7000 3550 50  0001 C CNN
+F 3 "" H 7000 3550 50  0001 C CNN
+	1    7000 3550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7000 3350 7200 3350
+Wire Wire Line
+	7000 3350 7000 3550
+Wire Wire Line
+	7200 3450 6600 3450
+$Comp
+L Connector:AVR-ISP-6 J4
+U 1 1 5F826D24
+P 9750 3200
+F 0 "J4" H 9420 3296 50  0000 R CNN
+F 1 "AVR-ISP-6" H 9420 3205 50  0000 R CNN
+F 2 "Connector_IDC:IDC-Header_2x03_P2.54mm_Vertical" V 9500 3250 50  0001 C CNN
+F 3 " ~" H 8475 2650 50  0001 C CNN
+F 4 "WSL 6G" H 9750 3200 50  0001 C CNN "Reichelt Ref."
+	1    9750 3200
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Connector:AVR-ISP-10 J5
+U 1 1 5F82D305
+P 9750 4550
+F 0 "J5" H 9420 4646 50  0000 R CNN
+F 1 "AVR-ISP-10" H 9420 4555 50  0000 R CNN
+F 2 "Connector_IDC:IDC-Header_2x05_P2.54mm_Vertical" V 9500 4600 50  0001 C CNN
+F 3 " ~" H 8475 4000 50  0001 C CNN
+F 4 "WSL 10G" H 9750 4550 50  0001 C CNN "Reichelt Ref."
+	1    9750 4550
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	9350 4650 9000 4650
+Wire Wire Line
+	9000 3300 9350 3300
+Wire Wire Line
+	9350 4550 9100 4550
+Wire Wire Line
+	9100 4550 9100 3200
+Wire Wire Line
+	9100 3200 9350 3200
+Wire Wire Line
+	9350 4450 9200 4450
+Wire Wire Line
+	9200 3100 9350 3100
+Wire Wire Line
+	9350 4350 9300 4350
+Wire Wire Line
+	9300 4350 9300 3000
+Wire Wire Line
+	9300 3000 9350 3000
+Wire Wire Line
+	9850 4050 9850 3950
+Wire Wire Line
+	9850 3950 10600 3950
+Wire Wire Line
+	10600 3950 10600 2600
+Wire Wire Line
+	10600 2600 9850 2600
+Wire Wire Line
+	9850 2600 9850 2700
+$Comp
+L Device:R R10
+U 1 1 5F8454C6
+P 8700 3100
+F 0 "R10" V 8493 3100 50  0000 C CNN
+F 1 "470" V 8584 3100 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 8630 3100 50  0001 C CNN
+F 3 "~" H 8700 3100 50  0001 C CNN
+F 4 "1/4W 470" H 8700 3100 50  0001 C CNN "Reichelt Ref."
+	1    8700 3100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	9200 4450 9200 3100
+Wire Wire Line
+	8850 3100 9200 3100
+Connection ~ 9200 3100
+$Comp
+L Device:R R9
+U 1 1 5F857764
+P 8250 3200
+F 0 "R9" V 8365 3200 50  0000 C CNN
+F 1 "470" V 8456 3200 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 8180 3200 50  0001 C CNN
+F 3 "~" H 8250 3200 50  0001 C CNN
+F 4 "1/4W 470" H 8250 3200 50  0001 C CNN "Reichelt Ref."
+	1    8250 3200
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8400 3200 9100 3200
+Connection ~ 9100 3200
+$Comp
+L power:GND #PWR0109
+U 1 1 5F862F53
+P 9850 3700
+F 0 "#PWR0109" H 9850 3450 50  0001 C CNN
+F 1 "GND" H 9855 3527 50  0000 C CNN
+F 2 "" H 9850 3700 50  0001 C CNN
+F 3 "" H 9850 3700 50  0001 C CNN
+	1    9850 3700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0110
+U 1 1 5F86368B
+P 9850 5050
+F 0 "#PWR0110" H 9850 4800 50  0001 C CNN
+F 1 "GND" H 9855 4877 50  0000 C CNN
+F 2 "" H 9850 5050 50  0001 C CNN
+F 3 "" H 9850 5050 50  0001 C CNN
+	1    9850 5050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9850 3600 9850 3700
+Wire Wire Line
+	9850 4950 9850 5050
+Connection ~ 9850 2600
+$Comp
+L MCU_Microchip_ATmega:ATmega88PA-PU U1
+U 1 1 5F801DC1
+P 2200 4050
+F 0 "U1" H 1557 4096 50  0000 R CNN
+F 1 "ATmega88PA-PU" H 1557 4005 50  0000 R CNN
+F 2 "Package_DIP:DIP-28_W7.62mm" H 2200 4050 50  0001 C CIN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/ATmega48PA_88PA_168PA-Data-Sheet-40002011A.pdf" H 2200 4050 50  0001 C CNN
+F 4 "ATMEGA 88PA-PU" H 2200 4050 50  0001 C CNN "Reichelt Ref."
+	1    2200 4050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 3450 3050 3450
+Wire Wire Line
+	3050 3450 3050 3250
+Wire Wire Line
+	3050 3250 3350 3250
+Wire Wire Line
+	2800 3550 3050 3550
+Wire Wire Line
+	3050 3550 3050 3750
+Wire Wire Line
+	3050 3750 3350 3750
+Wire Wire Line
+	3350 3750 3350 3700
+Wire Wire Line
+	3350 3750 3650 3750
+Connection ~ 3350 3750
+Wire Wire Line
+	3950 3250 4100 3250
+Wire Wire Line
+	4100 3250 4100 3450
+Wire Wire Line
+	4100 3750 3950 3750
+Wire Wire Line
+	4250 3550 4250 3450
+Wire Wire Line
+	4250 3450 4100 3450
+Connection ~ 4100 3450
+Wire Wire Line
+	4100 3450 4100 3750
+$Comp
+L power:GND #PWR0101
+U 1 1 5F89FF75
+P 1250 3650
+F 0 "#PWR0101" H 1250 3400 50  0001 C CNN
+F 1 "GND" H 1255 3477 50  0000 C CNN
+F 2 "" H 1250 3650 50  0001 C CNN
+F 3 "" H 1250 3650 50  0001 C CNN
+	1    1250 3650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 4750 3050 4750
+Wire Wire Line
+	2800 4850 3500 4850
+Wire Wire Line
+	2800 4950 3500 4950
+Wire Wire Line
+	3800 5250 3800 4950
+Connection ~ 3800 4950
+Wire Wire Line
+	3800 4950 3800 4850
+Wire Wire Line
+	4300 4750 3350 4750
+Wire Wire Line
+	3800 5550 3800 5700
+Wire Wire Line
+	3800 5700 4050 5700
+Wire Wire Line
+	4300 5700 4300 5550
+Wire Wire Line
+	4050 5800 4050 5700
+Connection ~ 4050 5700
+Wire Wire Line
+	4050 5700 4300 5700
+Wire Wire Line
+	4300 5250 4300 4750
+Wire Wire Line
+	4750 4750 4300 4750
+Connection ~ 4300 4750
+Wire Wire Line
+	4750 4850 3800 4850
+Connection ~ 3800 4850
+NoConn ~ 4750 4950
+Wire Wire Line
+	5050 5150 5050 5250
+Wire Wire Line
+	5050 5700 4300 5700
+Connection ~ 4300 5700
+Wire Wire Line
+	5150 5150 5150 5250
+Wire Wire Line
+	5150 5250 5050 5250
+Connection ~ 5050 5250
+Wire Wire Line
+	5050 5250 5050 5700
+Wire Wire Line
+	4750 4550 4750 2450
+Wire Wire Line
+	2200 2450 2200 2550
+Wire Wire Line
+	2300 2550 2300 2450
+Connection ~ 2300 2450
+Wire Wire Line
+	2300 2450 2200 2450
+NoConn ~ 1600 2850
+NoConn ~ 2800 3850
+NoConn ~ 2800 3950
+NoConn ~ 2800 4050
+NoConn ~ 2800 4150
+NoConn ~ 2800 4250
+Wire Wire Line
+	2800 5250 2850 5250
+Wire Wire Line
+	2850 5250 2850 5450
+Wire Wire Line
+	2850 5750 2850 5900
+$Comp
+L power:GND #PWR0104
+U 1 1 5F95A3FE
+P 2850 6350
+F 0 "#PWR0104" H 2850 6100 50  0001 C CNN
+F 1 "GND" H 2855 6177 50  0000 C CNN
+F 2 "" H 2850 6350 50  0001 C CNN
+F 3 "" H 2850 6350 50  0001 C CNN
+	1    2850 6350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2850 6200 2850 6300
+Wire Wire Line
+	1250 3050 1250 3200
+Wire Wire Line
+	1250 3500 1250 3650
+Wire Wire Line
+	1250 2750 1250 2400
+Wire Wire Line
+	1250 2400 3200 2400
+Wire Wire Line
+	3200 2950 2800 2950
+Wire Wire Line
+	2800 4350 2950 4350
+Wire Wire Line
+	2950 4350 2950 4100
+Wire Wire Line
+	2950 4100 3200 4100
+Wire Wire Line
+	3150 4200 3150 4300
+Wire Wire Line
+	3150 4300 4100 4300
+Wire Wire Line
+	4100 4300 4100 3750
+Connection ~ 4100 3750
+Wire Wire Line
+	3150 4200 3200 4200
+Wire Wire Line
+	6200 4600 5350 4600
+Wire Wire Line
+	5350 4600 5350 4250
+Wire Wire Line
+	5350 4250 4550 4250
+Wire Wire Line
+	4550 4250 4550 4650
+Wire Wire Line
+	4550 4650 2800 4650
+Wire Wire Line
+	6600 3900 6600 4000
+Connection ~ 6600 3900
+Wire Wire Line
+	2800 4550 3000 4550
+Wire Wire Line
+	3000 4550 3000 2850
+Wire Wire Line
+	4450 3900 4450 4550
+Wire Wire Line
+	4450 4550 3000 4550
+Wire Wire Line
+	4450 3900 6600 3900
+Connection ~ 3000 4550
+$Comp
+L power:GND #PWR0105
+U 1 1 5FA8C213
+P 4200 4300
+F 0 "#PWR0105" H 4200 4050 50  0001 C CNN
+F 1 "GND" H 4205 4127 50  0000 C CNN
+F 2 "" H 4200 4300 50  0001 C CNN
+F 3 "" H 4200 4300 50  0001 C CNN
+	1    4200 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3450 3900 3450 3800
+Wire Wire Line
+	3450 3800 2900 3800
+Wire Wire Line
+	2900 3800 2900 3750
+Wire Wire Line
+	2900 3750 2800 3750
+Wire Wire Line
+	9000 3800 9000 4650
+Wire Wire Line
+	9000 3300 9000 3800
+Connection ~ 9000 3800
+Wire Wire Line
+	6600 3800 6600 3900
+Wire Wire Line
+	6600 3450 6600 3800
+Connection ~ 6600 3800
+Wire Wire Line
+	6600 3800 9000 3800
+NoConn ~ 2800 5050
+NoConn ~ 2800 5150
+$Comp
+L Device:Crystal Y1
+U 1 1 5F853BC5
+P 3350 3550
+F 0 "Y1" V 3304 3681 50  0000 L CNN
+F 1 "20.0000 MHz" V 3395 3681 50  0000 L CNN
+F 2 "Crystal:Crystal_HC49-U_Vertical" H 3350 3550 50  0001 C CNN
+F 3 "~" H 3350 3550 50  0001 C CNN
+F 4 "20,0000-HC49U-S" H 3350 3550 50  0001 C CNN "Reichelt Ref."
+	1    3350 3550
+	0    1    1    0   
+$EndComp
+Connection ~ 3350 3250
+Wire Wire Line
+	3350 3250 3350 3400
+Wire Wire Line
+	3350 3250 3650 3250
+$Comp
+L Device:C C4
+U 1 1 5F85D6C4
+P 3800 3250
+F 0 "C4" V 3850 3350 50  0000 C CNN
+F 1 "22p" V 3950 3350 50  0000 C CNN
+F 2 "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 3838 3100 50  0001 C CNN
+F 3 "~" H 3800 3250 50  0001 C CNN
+F 4 "KERKO 22P" H 3800 3250 50  0001 C CNN "Reichelt Ref."
+	1    3800 3250
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8550 3100 2850 3100
+Wire Wire Line
+	2850 3100 2850 3150
+Wire Wire Line
+	2850 3150 2800 3150
+Wire Wire Line
+	9300 3000 2950 3000
+Wire Wire Line
+	2950 3000 2950 3250
+Wire Wire Line
+	2950 3250 2800 3250
+Connection ~ 9300 3000
+$Comp
+L Device:R R11
+U 1 1 5FB0D151
+P 2900 2650
+F 0 "R11" H 2970 2696 50  0000 L CNN
+F 1 "470" H 2970 2605 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 2830 2650 50  0001 C CNN
+F 3 "~" H 2900 2650 50  0001 C CNN
+F 4 "1/4W 470" H 2900 2650 50  0001 C CNN "Reichelt Ref."
+	1    2900 2650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 2850 3000 2850
+Wire Wire Line
+	2900 2800 2900 3050
+Wire Wire Line
+	2900 3050 2800 3050
+Wire Wire Line
+	2900 2500 2900 2450
+Wire Wire Line
+	2900 2450 2300 2450
+Wire Wire Line
+	3200 2400 3200 2950
+Wire Wire Line
+	1500 2150 1500 2200
+Connection ~ 1500 2150
+Wire Wire Line
+	1950 2150 1500 2150
+Wire Wire Line
+	1950 2100 1950 2150
+Wire Wire Line
+	1500 2100 1500 2150
+Wire Wire Line
+	1950 1750 1950 1800
+Wire Wire Line
+	1500 1750 1500 1800
+$Comp
+L power:GND #PWR0106
+U 1 1 5F87AD96
+P 1500 2200
+F 0 "#PWR0106" H 1500 1950 50  0001 C CNN
+F 1 "GND" H 1422 2163 50  0000 R CNN
+F 2 "" H 1500 2200 50  0001 C CNN
+F 3 "" H 1500 2200 50  0001 C CNN
+	1    1500 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP C1
+U 1 1 5F86FCED
+P 1500 1950
+F 0 "C1" H 1618 1996 50  0000 L CNN
+F 1 "10u" H 1618 1905 50  0000 L CNN
+F 2 "Capacitor_THT:CP_Radial_D4.0mm_P2.00mm" H 1538 1800 50  0001 C CNN
+F 3 "~" H 1500 1950 50  0001 C CNN
+F 4 "RAD 10/35" H 1500 1950 50  0001 C CNN "Reichelt Ref."
+	1    1500 1950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C2
+U 1 1 5F86E1A2
+P 1950 1950
+F 0 "C2" H 2065 1996 50  0000 L CNN
+F 1 "100n" H 2065 1905 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 1988 1800 50  0001 C CNN
+F 3 "~" H 1950 1950 50  0001 C CNN
+F 4 "KERKO 100N" H 1950 1950 50  0001 C CNN "Reichelt Ref."
+	1    1950 1950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4750 2450 6300 2450
+Connection ~ 4750 2450
+Connection ~ 2900 2450
+Wire Wire Line
+	2200 6300 2850 6300
+Wire Wire Line
+	2200 5550 2200 6300
+Connection ~ 2850 6300
+Wire Wire Line
+	2850 6300 2850 6350
+$Comp
+L Connector_Generic:Conn_01x03 H1
+U 1 1 5F86C2CC
+P 7800 2350
+F 0 "H1" H 7880 2392 50  0000 L CNN
+F 1 "Jumper" H 7880 2301 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 7800 2350 50  0001 C CNN
+F 3 "~" H 7800 2350 50  0001 C CNN
+F 4 "SL 1X40G 2,54" H 7800 2350 50  0001 C CNN "Reichelt Ref."
+	1    7800 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7500 2350 7600 2350
+Wire Wire Line
+	7600 2450 6300 2450
+NoConn ~ 7600 2250
+Wire Wire Line
+	6300 2450 6300 3450
+Wire Wire Line
+	7500 2350 7500 2600
+Connection ~ 6300 2450
+Wire Wire Line
+	7500 2600 9850 2600
+Wire Wire Line
+	2900 2450 4750 2450
+Wire Wire Line
+	4100 3200 4100 2900
+Wire Wire Line
+	4100 2900 3250 2900
+Wire Wire Line
+	3250 2900 3250 3350
+Wire Wire Line
+	3250 3350 2800 3350
+Wire Wire Line
+	4100 3200 8100 3200
+Wire Wire Line
+	1500 1750 1950 1750
+Wire Wire Line
+	1950 1750 2300 1750
+Wire Wire Line
+	2300 1750 2300 2450
+Connection ~ 1950 1750
+$Comp
+L Device:R R8
+U 1 1 5F80A94A
+P 4200 4100
+F 0 "R8" H 4270 4146 50  0000 L CNN
+F 1 "470" H 4270 4055 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 4130 4100 50  0001 C CNN
+F 3 "~" H 4200 4100 50  0001 C CNN
+F 4 "1/4W 470" H 4200 4100 50  0001 C CNN "Reichelt Ref."
+	1    4200 4100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4200 3900 4200 3950
+Wire Wire Line
+	3450 3900 4200 3900
+Wire Wire Line
+	4200 4300 4200 4250
+$EndSCHEMATC
