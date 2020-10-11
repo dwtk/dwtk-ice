@@ -1,9 +1,9 @@
 name: yatr
 on:
-  - push:
-      paths-ignore:
-        - 'hardware/**'
-        - 'images/**'
+  push:
+    paths-ignore:
+      - 'hardware/**'
+      - 'images/**'
 
 jobs:
   yatr:
