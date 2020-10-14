@@ -22,6 +22,7 @@ F 1 "USB B Mini Female" H 1821 2548 50  0000 R CNN
 F 2 "custom-footprints:RND_205-00862" H 2200 2600 50  0001 C CNN
 F 3 "~" H 2200 2600 50  0001 C CNN
 F 4 "RND 205-00862" H 2050 2650 50  0001 C CNN "Reichelt Ref."
+F 5 "538-54819-0519" H 2050 2650 50  0001 C CNN "Mouser Ref."
 	1    2050 2650
 	1    0    0    -1  
 $EndComp
@@ -34,6 +35,7 @@ F 1 "ATtiny4313-PU" H 3950 5440 50  0000 C CNN
 F 2 "Package_DIP:DIP-20_W7.62mm" H 3950 4250 50  0001 C CIN
 F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/doc8246.pdf" H 3950 4250 50  0001 C CNN
 F 4 "ATTINY 4313 PU" H 3950 4250 50  0001 C CNN "Reichelt Ref."
+F 5 "556-ATTINY4313-PU" H 3950 4250 50  0001 C CNN "Mouser Ref."
 	1    3950 4250
 	1    0    0    -1  
 $EndComp
@@ -57,6 +59,7 @@ F 1 "68" V 4834 4550 50  0000 C CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 4880 4550 50  0001 C CNN
 F 3 "~" H 4950 4550 50  0001 C CNN
 F 4 "1/4W 68" H 4950 4550 50  0001 C CNN "Reichelt Ref."
+F 5 "291-68-RC" H 4950 4550 50  0001 C CNN "Mouser Ref."
 	1    4950 4550
 	0    1    1    0   
 $EndComp
@@ -69,6 +72,7 @@ F 1 "68" V 5150 4650 50  0000 C CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5180 4650 50  0001 C CNN
 F 3 "~" H 5250 4650 50  0001 C CNN
 F 4 "1/4W 68" H 5250 4650 50  0001 C CNN "Reichelt Ref."
+F 5 "291-68-RC" H 5250 4650 50  0001 C CNN "Mouser Ref."
 	1    5250 4650
 	0    1    1    0   
 $EndComp
@@ -85,6 +89,7 @@ F 1 "3,6" V 6095 5080 50  0000 L CNN
 F 2 "Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal" H 6050 5000 50  0001 C CNN
 F 3 "~" H 6050 5000 50  0001 C CNN
 F 4 "ZF 3,6" H 6050 5000 50  0001 C CNN "Reichelt Ref."
+F 5 "512-BZX79C3V6" H 6050 5000 50  0001 C CNN "Mouser Ref."
 	1    6050 5000
 	0    1    1    0   
 $EndComp
@@ -125,6 +130,7 @@ F 1 "2k2" V 5456 4750 50  0000 C CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5180 4750 50  0001 C CNN
 F 3 "~" H 5250 4750 50  0001 C CNN
 F 4 "1/4W 2,2K" H 5250 4750 50  0001 C CNN "Reichelt Ref."
+F 5 "291-2.2K-RC" H 5250 4750 50  0001 C CNN "Mouser Ref."
 	1    5250 4750
 	0    1    1    0   
 $EndComp
@@ -137,6 +143,7 @@ F 1 "3,6" V 5595 5080 50  0000 L CNN
 F 2 "Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal" H 5550 5000 50  0001 C CNN
 F 3 "~" H 5550 5000 50  0001 C CNN
 F 4 "ZF 3,6" H 5550 5000 50  0001 C CNN "Reichelt Ref."
+F 5 "512-BZX79C3V6" H 5550 5000 50  0001 C CNN "Mouser Ref."
 	1    5550 5000
 	0    1    1    0   
 $EndComp
@@ -165,6 +172,7 @@ F 1 "Red" V 4998 5382 50  0000 R CNN
 F 2 "LED_THT:LED_D3.0mm" H 5050 5500 50  0001 C CNN
 F 3 "~" H 5050 5500 50  0001 C CNN
 F 4 "RND 135-00155" H 5050 5500 50  0001 C CNN "Reichelt Ref."
+F 5 "604-WP710A10SEC/J3" H 5050 5500 50  0001 C CNN "Mouser Ref."
 	1    5050 5500
 	0    -1   -1   0   
 $EndComp
@@ -177,6 +185,7 @@ F 1 "1k5" H 5120 5105 50  0000 L CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 4980 5150 50  0001 C CNN
 F 3 "~" H 5050 5150 50  0001 C CNN
 F 4 "1/4W 1,5K" H 5050 5150 50  0001 C CNN "Reichelt Ref."
+F 5 "291-1.5K-RC" H 5050 5150 50  0001 C CNN "Mouser Ref."
 	1    5050 5150
 	1    0    0    -1  
 $EndComp
@@ -208,6 +217,7 @@ F 1 "1k5" H 4770 5105 50  0000 L CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 4630 5150 50  0001 C CNN
 F 3 "~" H 4700 5150 50  0001 C CNN
 F 4 "1/4W 1,5K" H 4700 5150 50  0001 C CNN "Reichelt Ref."
+F 5 "291-1.5K-RC" H 4700 5150 50  0001 C CNN "Mouser Ref."
 	1    4700 5150
 	1    0    0    -1  
 $EndComp
@@ -220,6 +230,7 @@ F 1 "Green" V 4648 5580 50  0000 L CNN
 F 2 "LED_THT:LED_D3.0mm" H 4700 5500 50  0001 C CNN
 F 3 "~" H 4700 5500 50  0001 C CNN
 F 4 "RND 135-00157" H 4700 5500 50  0001 C CNN "Reichelt Ref."
+F 5 "604-WP710A10ZGC/G" H 4700 5500 50  0001 C CNN "Mouser Ref."
 	1    4700 5500
 	0    -1   -1   0   
 $EndComp
@@ -245,6 +256,7 @@ F 1 "20.0000 MHz" V 2545 4031 50  0000 L CNN
 F 2 "Crystal:Crystal_HC49-U_Vertical" H 2500 3900 50  0001 C CNN
 F 3 "~" H 2500 3900 50  0001 C CNN
 F 4 "20,0000-HC49U-S" H 2500 3900 50  0001 C CNN "Reichelt Ref."
+F 5 "815-ABL-20-B4Y" H 2500 3900 50  0001 C CNN "Mouser Ref."
 	1    2500 3900
 	0    1    1    0   
 $EndComp
@@ -270,6 +282,7 @@ F 1 "22p" V 1989 3650 50  0000 C CNN
 F 2 "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 2188 3500 50  0001 C CNN
 F 3 "~" H 2150 3650 50  0001 C CNN
 F 4 "KERKO 22P" H 2150 3650 50  0001 C CNN "Reichelt Ref."
+F 5 "594-K220J15C0GF53L2" H 2150 3650 50  0001 C CNN "Mouser Ref."
 	1    2150 3650
 	0    1    1    0   
 $EndComp
@@ -282,6 +295,7 @@ F 1 "22p" V 1989 4150 50  0000 C CNN
 F 2 "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 2188 4000 50  0001 C CNN
 F 3 "~" H 2150 4150 50  0001 C CNN
 F 4 "KERKO 22P" H 2150 4150 50  0001 C CNN "Reichelt Ref."
+F 5 "594-K220J15C0GF53L2" H 2150 4150 50  0001 C CNN "Mouser Ref."
 	1    2150 4150
 	0    1    1    0   
 $EndComp
@@ -337,6 +351,7 @@ F 1 "100n" H 5415 2005 50  0000 L CNN
 F 2 "Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm" H 5338 1900 50  0001 C CNN
 F 3 "~" H 5300 2050 50  0001 C CNN
 F 4 "KERKO 100N" H 5300 2050 50  0001 C CNN "Reichelt Ref."
+F 5 "594-K104K15X7RF53K2" H 5300 2050 50  0001 C CNN "Mouser Ref."
 	1    5300 2050
 	1    0    0    -1  
 $EndComp
@@ -349,6 +364,7 @@ F 1 "10u" H 4968 2005 50  0000 L CNN
 F 2 "Capacitor_THT:CP_Radial_D4.0mm_P2.00mm" H 4888 1900 50  0001 C CNN
 F 3 "~" H 4850 2050 50  0001 C CNN
 F 4 "RAD 10/35" H 4850 2050 50  0001 C CNN "Reichelt Ref."
+F 5 "667-ECA-1VM100I" H 4850 2050 50  0001 C CNN "Mouser Ref."
 	1    4850 2050
 	1    0    0    -1  
 $EndComp
@@ -377,6 +393,7 @@ F 1 "JST XH2P Female" H 1842 1716 50  0000 C CNN
 F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 1950 1950 50  0001 C CNN
 F 3 "~" H 1950 1950 50  0001 C CNN
 F 4 "JST XH2P ST" H 1950 1950 50  0001 C CNN "Reichelt Ref."
+F 5 "N/A" H 1950 1950 50  0001 C CNN "Mouser Ref."
 	1    1950 1950
 	-1   0    0    1   
 $EndComp
@@ -415,6 +432,7 @@ F 1 "BC548" H 6141 4005 50  0000 L CNN
 F 2 "Package_TO_SOT_THT:TO-92_Inline" H 6150 3975 50  0001 L CIN
 F 3 "http://www.fairchildsemi.com/ds/BC/BC547.pdf" H 5950 4050 50  0001 L CNN
 F 4 "BC 548B" H 5950 4050 50  0001 C CNN "Reichelt Ref."
+F 5 "821-BC548B-A1" H 5950 4050 50  0001 C CNN "Mouser Ref."
 	1    5950 4050
 	1    0    0    -1  
 $EndComp
@@ -427,6 +445,7 @@ F 1 "470" V 6050 4300 50  0000 C CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5780 4300 50  0001 C CNN
 F 3 "~" H 5850 4300 50  0001 C CNN
 F 4 "1/4W 470" H 5850 4300 50  0001 C CNN "Reichelt Ref."
+F 5 "291-470-RC" H 5850 4300 50  0001 C CNN "Mouser Ref."
 	1    5850 4300
 	0    1    1    0   
 $EndComp
@@ -456,6 +475,7 @@ F 1 "22k" H 5820 3405 50  0000 L CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 5680 3450 50  0001 C CNN
 F 3 "~" H 5750 3450 50  0001 C CNN
 F 4 "1/4W 22K" H 5750 3450 50  0001 C CNN "Reichelt Ref."
+F 5 "291-22K-RC" H 5750 3450 50  0001 C CNN "Mouser Ref."
 	1    5750 3450
 	1    0    0    -1  
 $EndComp
@@ -473,6 +493,7 @@ F 1 "JST XH2P Female" H 6878 3085 50  0000 L CNN
 F 2 "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical" H 6850 3200 50  0001 C CNN
 F 3 "~" H 6850 3200 50  0001 C CNN
 F 4 "JST XH2P ST" H 6850 3200 50  0001 C CNN "Reichelt Ref."
+F 5 "N/A" H 6850 3200 50  0001 C CNN "Mouser Ref."
 	1    6850 3200
 	1    0    0    -1  
 $EndComp
@@ -519,6 +540,7 @@ F 1 "470" H 6670 4505 50  0000 L CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 6530 4550 50  0001 C CNN
 F 3 "~" H 6600 4550 50  0001 C CNN
 F 4 "1/4W 470" H 6600 4550 50  0001 C CNN "Reichelt Ref."
+F 5 "291-470-RC" H 6600 4550 50  0001 C CNN "Mouser Ref."
 	1    6600 4550
 	1    0    0    -1  
 $EndComp
@@ -542,6 +564,7 @@ F 1 "AVR-ISP-6" H 8870 3055 50  0000 R CNN
 F 2 "Connector_IDC:IDC-Header_2x03_P2.54mm_Vertical" V 8950 3100 50  0001 C CNN
 F 3 " ~" H 7925 2500 50  0001 C CNN
 F 4 "WSL 6G" H 9200 3050 50  0001 C CNN "Reichelt Ref."
+F 5 "710-61200621621" H 9200 3050 50  0001 C CNN "Mouser Ref."
 	1    9200 3050
 	-1   0    0    -1  
 $EndComp
@@ -554,6 +577,7 @@ F 1 "AVR-ISP-10" H 8870 4405 50  0000 R CNN
 F 2 "Connector_IDC:IDC-Header_2x05_P2.54mm_Vertical" V 8950 4450 50  0001 C CNN
 F 3 " ~" H 7925 3850 50  0001 C CNN
 F 4 "WSL 10G" H 9200 4400 50  0001 C CNN "Reichelt Ref."
+F 5 "710-61201021621" H 9200 4400 50  0001 C CNN "Mouser Ref."
 	1    9200 4400
 	-1   0    0    -1  
 $EndComp
@@ -605,6 +629,7 @@ F 1 "470" V 8050 2950 50  0000 C CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 8080 2950 50  0001 C CNN
 F 3 "~" H 8150 2950 50  0001 C CNN
 F 4 "1/4W 470" H 8150 2950 50  0001 C CNN "Reichelt Ref."
+F 5 "291-470-RC" H 8150 2950 50  0001 C CNN "Mouser Ref."
 	1    8150 2950
 	0    1    1    0   
 $EndComp
@@ -628,6 +653,7 @@ F 1 "470" V 7906 3050 50  0000 C CNN
 F 2 "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal" V 7630 3050 50  0001 C CNN
 F 3 "~" H 7700 3050 50  0001 C CNN
 F 4 "1/4W 470" H 7700 3050 50  0001 C CNN "Reichelt Ref."
+F 5 "291-470-RC" H 7700 3050 50  0001 C CNN "Mouser Ref."
 	1    7700 3050
 	0    1    1    0   
 $EndComp
@@ -675,6 +701,7 @@ F 1 "Jumper" H 7330 2251 50  0000 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 7250 2300 50  0001 C CNN
 F 3 "~" H 7250 2300 50  0001 C CNN
 F 4 "SL 1X40G 2,54" H 7250 2300 50  0001 C CNN "Reichelt Ref."
+F 5 "68797-236HLF" H 7250 2300 50  0001 C CNN "Mouser Ref."
 	1    7250 2300
 	1    0    0    -1  
 $EndComp

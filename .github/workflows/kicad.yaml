@@ -38,7 +38,7 @@ jobs:
                   --include-tracks \
                   --include-nets \
                   --netlist-file "./hardware/$variant/$variant.net" \
-                  --extra-fields "Reichelt Ref." \
+                  --extra-fields "Reichelt Ref.,Mouser Ref." \
                   "./hardware/$variant/$variant.kicad_pcb"
           done
           tar \

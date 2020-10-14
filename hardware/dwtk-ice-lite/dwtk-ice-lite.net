@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/rafael/dev/git/dwtk-ice/hardware/dwtk-ice-lite/dwtk-ice-lite.sch)
-    (date "Sun 11 Oct 2020 09:14:20 PM CEST")
+    (date "Wed 14 Oct 2020 10:39:08 PM CEST")
     (tool "Eeschema 5.1.6")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -20,6 +20,7 @@
       (footprint custom-footprints:RND_205-00862)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 538-54819-0519)
         (field (name "Reichelt Ref.") "RND 205-00862"))
       (libsource (lib Connector) (part USB_B_Mini) (description "USB Mini Type B connector"))
       (sheetpath (names /) (tstamps /))
@@ -29,6 +30,7 @@
       (footprint Package_DIP:DIP-20_W7.62mm)
       (datasheet http://ww1.microchip.com/downloads/en/DeviceDoc/doc8246.pdf)
       (fields
+        (field (name "Mouser Ref.") 556-ATTINY4313-PU)
         (field (name "Reichelt Ref.") "ATTINY 4313 PU"))
       (libsource (lib MCU_Microchip_ATtiny) (part ATtiny4313-PU) (description "20MHz, 4kB Flash, 256B SRAM, 256B EEPROM, DIP-20"))
       (sheetpath (names /) (tstamps /))
@@ -38,6 +40,7 @@
       (footprint Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 291-68-RC)
         (field (name "Reichelt Ref.") "1/4W 68"))
       (libsource (lib Device) (part R) (description Resistor))
       (sheetpath (names /) (tstamps /))
@@ -47,6 +50,7 @@
       (footprint Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 291-68-RC)
         (field (name "Reichelt Ref.") "1/4W 68"))
       (libsource (lib Device) (part R) (description Resistor))
       (sheetpath (names /) (tstamps /))
@@ -56,6 +60,7 @@
       (footprint Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 512-BZX79C3V6)
         (field (name "Reichelt Ref.") "ZF 3,6"))
       (libsource (lib Device) (part D_Zener) (description "Zener diode"))
       (sheetpath (names /) (tstamps /))
@@ -65,6 +70,7 @@
       (footprint Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 291-2.2K-RC)
         (field (name "Reichelt Ref.") "1/4W 2,2K"))
       (libsource (lib Device) (part R) (description Resistor))
       (sheetpath (names /) (tstamps /))
@@ -74,6 +80,7 @@
       (footprint Diode_THT:D_DO-35_SOD27_P7.62mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 512-BZX79C3V6)
         (field (name "Reichelt Ref.") "ZF 3,6"))
       (libsource (lib Device) (part D_Zener) (description "Zener diode"))
       (sheetpath (names /) (tstamps /))
@@ -83,6 +90,7 @@
       (footprint LED_THT:LED_D3.0mm)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 604-WP710A10SEC/J3)
         (field (name "Reichelt Ref.") "RND 135-00155"))
       (libsource (lib Device) (part LED) (description "Light emitting diode"))
       (sheetpath (names /) (tstamps /))
@@ -92,6 +100,7 @@
       (footprint Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 291-1.5K-RC)
         (field (name "Reichelt Ref.") "1/4W 1,5K"))
       (libsource (lib Device) (part R) (description Resistor))
       (sheetpath (names /) (tstamps /))
@@ -101,6 +110,7 @@
       (footprint Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 291-1.5K-RC)
         (field (name "Reichelt Ref.") "1/4W 1,5K"))
       (libsource (lib Device) (part R) (description Resistor))
       (sheetpath (names /) (tstamps /))
@@ -110,6 +120,7 @@
       (footprint LED_THT:LED_D3.0mm)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 604-WP710A10ZGC/G)
         (field (name "Reichelt Ref.") "RND 135-00157"))
       (libsource (lib Device) (part LED) (description "Light emitting diode"))
       (sheetpath (names /) (tstamps /))
@@ -119,6 +130,7 @@
       (footprint Crystal:Crystal_HC49-U_Vertical)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 815-ABL-20-B4Y)
         (field (name "Reichelt Ref.") 20,0000-HC49U-S))
       (libsource (lib Device) (part Crystal) (description "Two pin crystal"))
       (sheetpath (names /) (tstamps /))
@@ -128,6 +140,7 @@
       (footprint Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 594-K220J15C0GF53L2)
         (field (name "Reichelt Ref.") "KERKO 22P"))
       (libsource (lib Device) (part C) (description "Unpolarized capacitor"))
       (sheetpath (names /) (tstamps /))
@@ -137,6 +150,7 @@
       (footprint Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 594-K220J15C0GF53L2)
         (field (name "Reichelt Ref.") "KERKO 22P"))
       (libsource (lib Device) (part C) (description "Unpolarized capacitor"))
       (sheetpath (names /) (tstamps /))
@@ -146,6 +160,7 @@
       (footprint Capacitor_THT:CP_Radial_D4.0mm_P2.00mm)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 667-ECA-1VM100I)
         (field (name "Reichelt Ref.") "RAD 10/35"))
       (libsource (lib Device) (part CP) (description "Polarized capacitor"))
       (sheetpath (names /) (tstamps /))
@@ -155,6 +170,7 @@
       (footprint Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") N/A)
         (field (name "Reichelt Ref.") "JST XH2P ST"))
       (libsource (lib Connector) (part Conn_01x02_Female) (description "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"))
       (sheetpath (names /) (tstamps /))
@@ -164,6 +180,7 @@
       (footprint Package_TO_SOT_THT:TO-92_Inline)
       (datasheet http://www.fairchildsemi.com/ds/BC/BC547.pdf)
       (fields
+        (field (name "Mouser Ref.") 821-BC548B-A1)
         (field (name "Reichelt Ref.") "BC 548B"))
       (libsource (lib Transistor_BJT) (part BC548) (description "0.1A Ic, 30V Vce, Small Signal NPN Transistor, TO-92"))
       (sheetpath (names /) (tstamps /))
@@ -173,6 +190,7 @@
       (footprint Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 291-470-RC)
         (field (name "Reichelt Ref.") "1/4W 470"))
       (libsource (lib Device) (part R) (description Resistor))
       (sheetpath (names /) (tstamps /))
@@ -182,6 +200,7 @@
       (footprint Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 291-22K-RC)
         (field (name "Reichelt Ref.") "1/4W 22K"))
       (libsource (lib Device) (part R) (description Resistor))
       (sheetpath (names /) (tstamps /))
@@ -191,6 +210,7 @@
       (footprint Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") N/A)
         (field (name "Reichelt Ref.") "JST XH2P ST"))
       (libsource (lib Connector) (part Conn_01x02_Female) (description "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"))
       (sheetpath (names /) (tstamps /))
@@ -200,6 +220,7 @@
       (footprint Capacitor_THT:C_Disc_D3.0mm_W1.6mm_P2.50mm)
       (datasheet ~)
       (fields
+        (field (name "Mouser Ref.") 594-K104K15X7RF53K2)
         (field (name "Reichelt Ref.") "KERKO 100N"))
       (libsource (lib Device) (part C) (description "Unpolarized capacitor"))
       (sheetpath (names /) (tstamps /))
