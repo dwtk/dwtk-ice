@@ -129,6 +129,6 @@ info: .check-dwtk
 	$(DWTK_CMD) info
 
 clean:
-	-$(RM) $(BUILDDIR)/$(FIRMWARE_FILENAME).{elf,hex}
+	-$(RM) $(BUILDDIR)/$(FIRMWARE_FILENAME).elf $(BUILDDIR)/$(FIRMWARE_FILENAME).hex
 
 .PHONY: all .all .check-dwtk size enable disable flash verify fuses gdbserver info clean

@@ -14,7 +14,38 @@
 #include <util/delay.h>
 #include "bits.h"
 #include "usart.h"
+
+#if defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__) || defined(__AVR_ATmega32U2__)
+#include "usb-u2/usb-u2.h"
+#define BUILD_WITH_USB_U2 1
+
+#define USBRQ_DIR_MASK USB_U2_REQ_DIR_MASK
+#define USBRQ_DIR_HOST_TO_DEVICE USB_U2_REQ_DIR_HOST_TO_DEVICE
+#define USB_NO_MSG 0xff
+
+typedef uint8_t usbMsgLen_t;
+typedef uint8_t uchar;
+
+typedef union {
+    uint16_t word;
+    uint8_t  bytes[2];
+} usbWord_t;
+
+typedef struct {
+    uint8_t   bmRequestType;
+    uint8_t   bRequest;
+    usbWord_t wValue;
+    usbWord_t wIndex;
+    usbWord_t wLength;
+} usbRequest_t;
+
+static uint8_t *usbMsgPtr;
+#else
 #include "usbdrv/usbdrv.h"
+#define BUILD_WITH_VUSB 1
+
+int usbDescriptorStringSerialNumber[9];
+#endif
 
 #define FREQ_MHZ (F_CPU/1000000)
 
@@ -124,8 +155,6 @@ static uint8_t alloc[131] = {
 // first 3 bytes are for error reporting.
 static uint8_t *err = alloc;
 static uint8_t *buf = alloc + 3;
-
-int usbDescriptorStringSerialNumber[9];
 
 
 static void
@@ -685,17 +714,10 @@ usbFunctionSetup(uchar data[8])
 }
 
 
-uchar
-usbFunctionWrite(uchar *data, uchar len)
+static void
+func_write(void)
 {
     wdt_reset();
-    for (uint8_t i = 0; i < len && remaining; i++, remaining--) {
-        buf[request_len - remaining] = data[i];
-    }
-
-    if (remaining) {
-        return 0;
-    }
 
     switch (cmd) {
         case CMD_REGISTERS:
@@ -740,16 +762,68 @@ usbFunctionWrite(uchar *data, uchar len)
         default:
             break;
     }
+}
 
+
+uchar
+usbFunctionWrite(uchar *data, uchar len)
+{
+    for (uint8_t i = 0; i < len && remaining; i++, remaining--) {
+        buf[request_len - remaining] = data[i];
+    }
+
+    if (remaining) {
+        return 0;
+    }
+
+    func_write();
     return 1;
 }
 
 
+#ifdef BUILD_WITH_USB_U2
+void
+usb_u2_control_vendor_cb(const usb_u2_control_request_t *req)
+{
+    PORT_SET(P_LEDG);
+
+    uint8_t l = usbFunctionSetup((uint8_t*) req);
+    if (l == USB_NO_MSG) {
+        if ((req->bmRequestType & USB_U2_REQ_DIR_MASK) == USB_U2_REQ_DIR_HOST_TO_DEVICE) {
+            usb_u2_control_out(buf, request_len);
+            func_write();
+            usb_u2_control_out_status();
+        }
+        return;
+    }
+
+    usb_u2_control_in(usbMsgPtr, l, false);
+}
+
+
+void
+usb_u2_set_address_hook_cb(uint8_t addr)
+{
+    (void) addr;
+    PORT_SET(P_LEDR);
+}
+
+
+void
+usb_u2_reset_hook_cb(void)
+{
+    PORT_CLEAR(P_LEDR);
+}
+#endif
+
+
+#ifdef BUILD_WITH_VUSB
 static char
 byte2hex(uint8_t v)
 {
     return v > 9 ? v - 10 + 'a' : v + '0';
 }
+#endif
 
 
 int
@@ -757,17 +831,32 @@ main(void)
 {
     wdt_enable(WDTO_2S);
 
+#ifdef BUILD_WITH_VUSB
     uint32_t d = eeprom_read_dword(0);
     usbDescriptorStringSerialNumber[0] = USB_STRING_DESCRIPTOR_HEADER(8);
     for (uint8_t i = 0; i < 8; i++) {
         usbDescriptorStringSerialNumber[i % 2 ? i : i + 2] = byte2hex((d >> (4 * i)) & 0xf);
     }
+#endif
 
     DDR_SET(P_LEDG);
     DDR_SET(P_LEDR);
     DDR_CLEAR(P_CAP_SPI);
     PORT_SET(P_CAP_SPI);
 
+#ifdef P_SS
+    // devices with SPI peripheral need SS set high to enable master mode.
+    // old dwtk-ice-mega designs have a pull up resistor, but doing that by
+    // software is a better idea in this case.
+    DDR_CLEAR(P_SS);
+    PORT_SET(P_SS);
+#endif
+
+#ifdef BUILD_WITH_USB_U2
+    usb_u2_init();
+#endif
+
+#ifdef BUILD_WITH_VUSB
     usbInit();
     usbDeviceDisconnect();
 
@@ -777,12 +866,18 @@ main(void)
         _delay_ms(1);
     }
     usbDeviceConnect();
+#endif
 
     sei();
 
     for (;;) {
         wdt_reset();
+#ifdef BUILD_WITH_USB_U2
+        usb_u2_task();
+#endif
+#ifdef BUILD_WITH_VUSB
         usbPoll();
+#endif
         PORT_CLEAR(P_LEDG);
         if (detect_baudrate) {
             detect_baudrate = false;

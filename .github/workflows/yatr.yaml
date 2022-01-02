@@ -17,6 +17,10 @@ jobs:
           - dist-attiny4313-debug
           - dist-atmega88pa
           - dist-atmega88pa-debug
+          - dist-atmega8u2
+          - dist-atmega8u2-debug
+          - dist-atmega32u2
+          - dist-atmega32u2-debug
 
     steps:
       - name: Check out code

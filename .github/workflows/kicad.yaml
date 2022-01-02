@@ -29,7 +29,7 @@ jobs:
 
       - name: Generate interactive BOMs
         run: |
-          for variant in dwtk-ice dwtk-ice-lite dwtk-ice-mega; do
+          for variant in dwtk-ice dwtk-ice-lite dwtk-ice-mega dwtk-ice-u2; do
               python3 ./InteractiveHtmlBom/InteractiveHtmlBom/generate_interactive_bom.py \
                   --dark-mode \
                   --no-browser \

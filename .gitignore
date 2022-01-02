@@ -16,3 +16,16 @@ _autosave-*
 *.ses
 *.sch-bak
 fp-info-cache
+
+# Gerber
+*.drl
+*.gbl
+*.gbo
+*.gbp
+*.gbr
+*.gbs
+*.gm1
+*.gtl
+*.gto
+*.gtp
+*.gts

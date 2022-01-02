@@ -8,53 +8,8 @@
 
 #pragma once
 
-#ifndef TIFR
-#define TIFR TIFR1
-#endif
-#ifndef UCSRA
-#define UCSRA UCSR0A
-#endif
-#ifndef UCSRB
-#define UCSRB UCSR0B
-#endif
-#ifndef UCSRC
-#define UCSRC UCSR0C
-#endif
-#ifndef UCSZ0
-#define UCSZ0 UCSZ00
-#endif
-#ifndef UBRRL
-#define UBRRL UBRR0L
-#endif
-#ifndef UBRRH
-#define UBRRH UBRR0H
-#endif
-#ifndef RXEN
-#define RXEN RXEN0
-#endif
-#ifndef TXEN
-#define TXEN TXEN0
-#endif
-#ifndef RXC
-#define RXC RXC0
-#endif
-#ifndef TXC
-#define TXC TXC0
-#endif
-#ifndef UDR
-#define UDR UDR0
-#endif
-#ifndef UDRE
-#define UDRE UDRE0
-#endif
-#ifndef FE
-#define FE FE0
-#endif
-#ifndef U2X
-#define U2X U2X0
-#endif
+#if defined(__AVR_ATtiny4313__)
 
-#ifdef __AVR_ATtiny4313__
 #define P_USCK    (B, 7)
 #define P_DI      (B, 5)
 #define P_DO      (B, 6)
@@ -62,14 +17,61 @@
 #define P_LEDR    (D, 5)
 #define P_LEDG    (B, 0)
 #define P_CAP_SPI (B, 4)
+
+#elif defined(__AVR_ATmega8U2__) || defined(__AVR_ATmega16U2__) || defined(__AVR_ATmega32U2__)
+
+#define TIFR TIFR1
+#define UCSRA UCSR1A
+#define UCSRB UCSR1B
+#define UCSRC UCSR1C
+#define UCSZ0 UCSZ10
+#define UBRRL UBRR1L
+#define UBRRH UBRR1H
+#define RXEN RXEN1
+#define TXEN TXEN1
+#define RXC RXC1
+#define TXC TXC1
+#define UDR UDR1
+#define UDRE UDRE1
+#define FE FE1
+#define U2X U2X1
+
+#define P_USCK    (B, 1)
+#define P_DI      (B, 3)
+#define P_DO      (B, 2)
+#define P_SS      (B, 0)
+#define P_TXD     (D, 3)
+#define P_LEDR    (C, 2)
+#define P_LEDG    (D, 0)
+#define P_CAP_SPI (B, 4)
+
 #else
+
+#define TIFR TIFR1
+#define UCSRA UCSR0A
+#define UCSRB UCSR0B
+#define UCSRC UCSR0C
+#define UCSZ0 UCSZ00
+#define UBRRL UBRR0L
+#define UBRRH UBRR0H
+#define RXEN RXEN0
+#define TXEN TXEN0
+#define RXC RXC0
+#define TXC TXC0
+#define UDR UDR0
+#define UDRE UDRE0
+#define FE FE0
+#define U2X U2X0
+
 #define P_USCK    (B, 5)
 #define P_DI      (B, 4)
 #define P_DO      (B, 3)
+#define P_SS      (B, 2)
 #define P_TXD     (D, 1)
 #define P_LEDR    (D, 7)
 #define P_LEDG    (B, 1)
 #define P_CAP_SPI (C, 0)
+
 #endif
 
 #define BIT_SET(reg, bit)   {(reg) |=  (1 << bit);}
