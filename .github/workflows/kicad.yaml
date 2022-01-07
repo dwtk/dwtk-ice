@@ -56,3 +56,4 @@ jobs:
               -F "version=$(ls -1 dwtk-ice-bom-* | head -n 1 | cut -d- -f4 | cut -d. -f1)" \
               -F "sha512=$(sha512sum dwtk-ice-bom-*)" \
               -F "extract=true"
+        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
